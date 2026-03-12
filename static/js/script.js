@@ -1,10 +1,7 @@
-// ILM Construction Web - Core Logic
-
 document.addEventListener('DOMContentLoaded', () => {
     fetchProducts();
 });
 
-// Backenddan mahsulotlarni tortib olish
 async function fetchProducts() {
     const container = document.getElementById('products-container');
     
@@ -13,12 +10,15 @@ async function fetchProducts() {
         if (!response.ok) throw new Error('Tarmoqda xatolik');
         
         const data = await response.json();
-        container.innerHTML = ''; // Loaderni tozalash
+        container.innerHTML = ''; 
 
         if (data.status === 'success' && data.data.length > 0) {
             data.data.forEach(product => {
                 const html = `
-                    <div class="glass-card flex flex-col h-full animate-fade-in">
+                    <div class="glass-card flex flex-col h-full animate-fade-in overflow-hidden">
+                        <div class="h-48 w-full bg-navy_light relative border-b border-gray-700">
+                            <img src="/api/image/${product.file_id}" alt="${product.name}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300/1e293b/facc15?text=Rasm+Yo%27q'">
+                        </div>
                         <div class="p-6 flex-grow">
                             <h3 class="font-heading text-2xl font-bold text-white mb-2 tracking-wide">${product.name}</h3>
                             <p class="text-neon_yellow text-xl font-mono font-bold mb-4">${product.price.toLocaleString()} so'm</p>
@@ -53,15 +53,12 @@ async function fetchProducts() {
     }
 }
 
-// Buyurtma modalini boshqarish
 window.openModal = function(id, name) {
     document.getElementById('product_id').value = id;
     document.getElementById('modal-product-name').innerText = name;
     const modal = document.getElementById('order-modal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
-    
-    // Psixologik tryuk: Fokusni avtomatik ism yozishga qaratish, konversiyani oshiradi
     setTimeout(() => document.getElementById('user_name').focus(), 100);
 }
 
@@ -72,13 +69,11 @@ window.closeModal = function() {
     document.getElementById('order-form').reset();
 }
 
-// Buyurtmani yuborish mantiqi
 window.submitOrder = async function(e) {
     e.preventDefault();
     const btn = e.target.querySelector('button[type="submit"]');
     const originalText = btn.innerHTML;
     
-    // Yuklanish effekti
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Yuborilmoqda...';
     btn.disabled = true;
     btn.classList.add('opacity-75', 'cursor-not-allowed');
@@ -97,7 +92,6 @@ window.submitOrder = async function(e) {
         });
         
         if (res.ok) {
-            // Muvaffaqiyatli animatsiya
             btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Qabul qilindi!';
             btn.classList.remove('btn-neon');
             btn.classList.add('bg-green-500', 'text-white', 'border-none');
@@ -120,7 +114,6 @@ window.submitOrder = async function(e) {
     }
 }
 
-// Modalni foniga bosganda yopilish mantiqi
 document.getElementById('order-modal').addEventListener('click', function(e) {
     if (e.target === this) {
         closeModal();
