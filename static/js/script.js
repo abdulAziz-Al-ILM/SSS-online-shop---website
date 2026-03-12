@@ -1,11 +1,101 @@
+// Til lug'atlari
+const translations = {
+    uz: {
+        subtitle: "Доим хизматингиздамиз!",
+        btn_katalog: "Каталогга ўтиш",
+        services_title: "Бизнинг хизматлар",
+        katalog_title: "Арзон қурилиш моллари",
+        locations_title: "Бизнинг манзиллар ва контактлар",
+        about_title: "Фирма ҳақида",
+        order_btn: "Буюртма бериш",
+        no_products: "Ҳозирча маҳсулотлар йўқ."
+    },
+    ru: {
+        subtitle: "Всегда к вашим услугам!",
+        btn_katalog: "Перейти в каталог",
+        services_title: "Наши услуги",
+        katalog_title: "Дешевые стройматериалы",
+        locations_title: "Наши адреса и контакты",
+        about_title: "О компании",
+        order_btn: "Заказать",
+        no_products: "Товаров пока нет."
+    },
+    kg: {
+        subtitle: "Дайыма кызматыңыздабыз!",
+        btn_katalog: "Каталогко өтүү",
+        services_title: "Биздин кызматтар",
+        katalog_title: "Арзан курулуш материалдары",
+        locations_title: "Биздин даректер жана байланыштар",
+        about_title: "Фирма жөнүндө",
+        order_btn: "Заказ берүү",
+        no_products: "Азырынча продукция жок."
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+    const savedLang = localStorage.getItem('selectedLang') || 'uz';
+    applyLang(savedLang);
+    
     fetchAds();
     fetchServices();
     fetchProducts();
     fetchLocations();
 });
 
-// Reklama va Bonuslar
+function changeLang(lang) {
+    localStorage.setItem('selectedLang', lang);
+    location.reload(); // Sahifani yangilab tillarni qo'llash
+}
+
+function applyLang(lang) {
+    const t = translations[lang];
+    document.getElementById('site-subtitle').innerText = t.subtitle;
+    document.getElementById('btn-katalog').innerText = t.btn_katalog;
+    document.getElementById('services-title').innerText = t.services_title;
+    document.getElementById('katalog-title').innerText = t.katalog_title;
+    document.getElementById('locations-title').innerText = t.locations_title;
+    document.getElementById('about-title').innerHTML = `<i class="fa-solid fa-circle-info"></i> ${t.about_title}`;
+}
+
+// Mahsulotlar (Buyurtma botga yo'naltirilgan)
+async function fetchProducts() {
+    const container = document.getElementById('products-container');
+    const lang = localStorage.getItem('selectedLang') || 'uz';
+    
+    try {
+        const res = await fetch('/api/products');
+        const data = await res.json();
+        container.innerHTML = ''; 
+        
+        if (data.data && data.data.length > 0) {
+            data.data.forEach(p => {
+                // Buyurtma bosilganda botga o'tkazish linki
+                const botLink = `${BOT_URL}?start=order_${p._id}`;
+                
+                container.innerHTML += `
+                    <div class="glass-card flex flex-col h-full overflow-hidden">
+                        <div class="h-48 w-full bg-navy_light relative border-b border-gray-700">
+                            <img src="/api/image/${p.file_id}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300/1e293b/facc15?text=Rasm+Yo%27q'">
+                        </div>
+                        <div class="p-6 flex-grow">
+                            <h3 class="font-heading text-2xl font-bold text-white mb-2 tracking-wide">${p.name}</h3>
+                            <p class="text-neon_yellow text-xl font-mono font-bold mb-4">${p.price.toLocaleString()} so'm</p>
+                            <p class="text-gray-400 text-sm mb-4 leading-relaxed">${p.description || ''}</p>
+                        </div>
+                        <div class="p-6 pt-0 mt-auto">
+                            <a href="${botLink}" target="_blank" class="block w-full text-center border-2 border-neon_yellow text-neon_yellow hover:bg-neon_yellow hover:text-navy font-bold py-2 rounded-lg transition-all duration-300">
+                                <i class="fa-solid fa-cart-shopping mr-2"></i> ${translations[lang].order_btn}
+                            </a>
+                        </div>
+                    </div>`;
+            });
+        } else {
+            container.innerHTML = `<p class="col-span-full text-center text-gray-400">${translations[lang].no_products}</p>`;
+        }
+    } catch (e) { console.error(e); }
+}
+
+// Boshqa fetch funksiyalari (Ads, Services, Locations) o'zgarmasdan qoladi
 async function fetchAds() {
     try {
         const res = await fetch('/api/ads');
@@ -26,7 +116,6 @@ async function fetchAds() {
     } catch (e) { console.error(e); }
 }
 
-// Xizmatlar
 async function fetchServices() {
     try {
         const res = await fetch('/api/services');
@@ -34,7 +123,6 @@ async function fetchServices() {
         const container = document.getElementById('services-container');
         if (data.data && data.data.length > 0) {
             data.data.forEach(srv => {
-                // Ikonka nomi bazadan keladi, bo'lmasa default 'fa-tools' qo'yiladi
                 const icon = srv.icon || 'fa-solid fa-tools'; 
                 container.innerHTML += `
                     <div class="glass-card p-6 border-t-4 border-t-neon_orange hover:scale-105 transition-transform">
@@ -43,13 +131,10 @@ async function fetchServices() {
                         <p class="text-gray-400 text-sm">${srv.description}</p>
                     </div>`;
             });
-        } else {
-            container.innerHTML = `<p class="text-gray-500 italic">Xizmatlar tez kunda qo'shiladi...</p>`;
         }
     } catch (e) { console.error(e); }
 }
 
-// Lokatsiyalar
 async function fetchLocations() {
     try {
         const res = await fetch('/api/locations');
@@ -69,67 +154,4 @@ async function fetchLocations() {
             });
         }
     } catch (e) { console.error(e); }
-}
-
-// Mahsulotlar (Oldingi kod, muammosiz)
-async function fetchProducts() {
-    const container = document.getElementById('products-container');
-    try {
-        const res = await fetch('/api/products');
-        const data = await res.json();
-        container.innerHTML = ''; 
-        if (data.data && data.data.length > 0) {
-            data.data.forEach(p => {
-                container.innerHTML += `
-                    <div class="glass-card flex flex-col h-full overflow-hidden">
-                        <div class="h-48 w-full bg-navy_light relative border-b border-gray-700">
-                            <img src="/api/image/${p.file_id}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300/1e293b/facc15?text=Rasm+Yo%27q'">
-                        </div>
-                        <div class="p-6 flex-grow">
-                            <h3 class="font-heading text-2xl font-bold text-white mb-2">${p.name}</h3>
-                            <p class="text-neon_yellow text-xl font-mono font-bold mb-4">${p.price.toLocaleString()} so'm</p>
-                            <p class="text-gray-400 text-sm mb-4">${p.description || ''}</p>
-                        </div>
-                        <div class="p-6 pt-0 mt-auto">
-                            <button onclick="openModal('${p._id}', '${p.name}')" class="w-full border-2 border-neon_yellow text-neon_yellow hover:bg-neon_yellow hover:text-navy font-bold py-2 rounded-lg transition-colors">
-                                <i class="fa-solid fa-cart-shopping mr-2"></i> Buyurtma
-                            </button>
-                        </div>
-                    </div>`;
-            });
-        } else {
-            container.innerHTML = `<p class="col-span-full text-center text-gray-400">Hozircha mahsulotlar yo'q.</p>`;
-        }
-    } catch (e) { console.error(e); }
-}
-
-window.openModal = function(id, name) {
-    document.getElementById('product_id').value = id;
-    document.getElementById('modal-product-name').innerText = name;
-    document.getElementById('order-modal').classList.remove('hidden');
-    document.getElementById('order-modal').classList.add('flex');
-    setTimeout(() => document.getElementById('user_name').focus(), 100);
-}
-
-window.closeModal = function() {
-    document.getElementById('order-modal').classList.add('hidden');
-    document.getElementById('order-modal').classList.remove('flex');
-    document.getElementById('order-form').reset();
-}
-
-window.submitOrder = async function(e) {
-    e.preventDefault();
-    const btn = e.target.querySelector('button[type="submit"]');
-    btn.innerHTML = 'Yuborilmoqda...'; btn.disabled = true;
-    try {
-        const res = await fetch('/api/order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ product_id: document.getElementById('product_id').value, name: document.getElementById('user_name').value, phone: document.getElementById('user_phone').value })
-        });
-        if (res.ok) {
-            btn.innerHTML = 'Qabul qilindi!';
-            setTimeout(() => { closeModal(); btn.innerHTML = 'Tasdiqlash'; btn.disabled = false; }, 2000);
-        }
-    } catch (err) { alert("Xato!"); btn.innerHTML = 'Tasdiqlash'; btn.disabled = false; }
 }
