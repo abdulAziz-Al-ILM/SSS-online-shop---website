@@ -1,6 +1,15 @@
-/* SSS ONLINE SHOP - MODERN NEON DESIGN v2.5
-    Design: Play Market Style + Glassmorphism
+/* SSS ONLINE SHOP - GLOBAL STYLESHEET v2.5
+    Design: Neo-futuristic / Glassmorphism
+    Developer: Abdulaziz (Andijan State University)
 */
+
+/* 1. RESET & BASE */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
 
 :root {
     --navy: #0f172a;
@@ -8,31 +17,22 @@
     --neon-yellow: #facc15;
     --neon-orange: #f97316;
     --glass: rgba(30, 41, 59, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.08);
 }
 
-/* 1. Umumiy sozlamalar */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+html {
     scroll-behavior: smooth;
+    background-color: var(--navy);
 }
 
 body {
-    background-color: var(--navy);
-    font-family: 'Inter', sans-serif;
-    color: #ffffff;
-    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 
-h1, h2, h3, .font-heading {
-    font-family: 'Rajdhani', sans-serif;
-}
-
-/* 2. Scrollbar (Chiroyli aylantirish) */
+/* 2. CUSTOM SCROLLBAR */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 ::-webkit-scrollbar-track {
     background: var(--navy);
@@ -45,22 +45,29 @@ h1, h2, h3, .font-heading {
     background: var(--neon-yellow);
 }
 
-/* 3. Glassmorphism Kartochkalari */
+/* 3. GLASSMORPHISM CORE */
 .glass-card {
     background: var(--glass);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
-    border-radius: 1.5rem;
-    transition: all 0.3s ease;
+    border-radius: 2.5rem;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .glass-card:hover {
-    border-color: rgba(250, 204, 21, 0.3);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    transform: translateY(-5px);
+    border-color: rgba(250, 204, 21, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
-/* 4. MUKAMMAL NEON TUGMA (Xatosiz versiya) */
+.glass-btn {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* 4. MUKAMMAL NEON TUGMA (FIXED GLITCH) */
 .btn-neon {
     position: relative;
     display: inline-flex;
@@ -68,101 +75,123 @@ h1, h2, h3, .font-heading {
     justify-content: center;
     background: linear-gradient(135deg, var(--neon-yellow), var(--neon-orange));
     color: var(--navy) !important;
-    font-weight: 700;
-    text-decoration: none;
-    overflow: hidden; /* MUHIM: Effekt tugmadan tashqariga chiqmaydi */
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-    cursor: pointer;
-    border: none;
+    overflow: hidden; /* MUHIM: Effekt tashqariga chiqmaydi */
+    transition: all 0.4s ease;
     z-index: 1;
+    border: none;
+    cursor: pointer;
 }
 
 .btn-neon:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 15px 30px rgba(250, 204, 21, 0.3);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(250, 204, 21, 0.3);
 }
 
 .btn-neon:active {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
-/* Yupqa yaltirash effekti (Glare Sweep) */
+/* Yupqa Glare Sweep (Yaltirash) */
 .btn-neon::after {
     content: "";
     position: absolute;
     top: 0;
     left: -150%;
-    width: 60%;
+    width: 70%;
     height: 100%;
     background: linear-gradient(
         to right,
         rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.5) 50%,
+        rgba(255, 255, 255, 0.6) 50%,
         rgba(255, 255, 255, 0) 100%
     );
     transform: skewX(-25deg);
-    transition: none;
+    transition: none; /* Standart holatda transition yo'q */
     z-index: 2;
 }
 
 .btn-neon:hover::after {
     left: 150%;
-    transition: all 0.7s ease-in-out;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 5. Header va Video Treyler */
-.aspect-video {
-    aspect-ratio: 16 / 9;
+/* 5. HEADER FADE EFFECT */
+header {
+    /* Play Market uslubidagi pastga qarab yo'qolish */
+    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
 }
 
-header video {
-    filter: brightness(0.8);
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.main-logo-box {
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
 }
 
-.text-glow {
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.3), 
-                 0 0 30px rgba(250, 204, 21, 0.2);
+/* 6. CARDS & SECTIONS */
+.social-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 2rem;
+    transition: all 0.3s ease;
 }
 
-/* 6. Mahsulot Kartochkalari */
-#products-container .glass-card img {
-    transition: transform 0.7s ease;
+.social-card:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px);
+}
+
+/* 7. ANIMATIONS */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+main section {
+    animation: fadeInUp 0.8s ease backwards;
+}
+
+main section:nth-child(2) { animation-delay: 0.2s; }
+main section:nth-child(3) { animation-delay: 0.4s; }
+
+/* 8. PRODUCT IMAGE HOVER */
+#products-container img {
+    transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1);
 }
 
 #products-container .glass-card:hover img {
-    transform: scale(1.1);
+    transform: scale(1.15) rotate(2deg);
 }
 
-/* 7. Animatsiyalar */
-@keyframes bounce-slow {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-.animate-bounce-slow {
-    animation: bounce-slow 3s infinite ease-in-out;
-}
-
-/* 8. Moslashuvchanlik (Responsive) */
+/* 9. RESPONSIVE ADJUSTMENTS */
 @media (max-width: 768px) {
-    .aspect-video {
-        aspect-ratio: 4 / 3; /* Mobilda video balandroq bo'ladi */
+    header {
+        height: 65vh;
     }
     
     .glass-card {
-        padding: 1.5rem !important;
+        border-radius: 2rem;
     }
     
-    h1 {
-        font-size: 2.5rem !important;
+    .text-6xl {
+        font-size: 3.5rem !important;
+    }
+    
+    .btn-neon {
+        width: 100%;
+        padding: 1.25rem;
     }
 }
 
-/* Footer qismi uchun qo'shimcha stil */
-footer .glass-card {
-    background: rgba(15, 23, 42, 0.5);
-    border: 1px solid rgba(249, 115, 22, 0.1);
+/* Utilities */
+.text-glow {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.2), 
+                 0 0 30px rgba(250, 204, 21, 0.1);
 }
+
+.bg-navy { background-color: var(--navy); }
+.bg-navy_light { background-color: var(--navy-light); }
