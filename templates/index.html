@@ -19,76 +19,85 @@
         }
     </script>
 </head>
-<body class="antialiased min-h-screen flex flex-col relative overflow-x-hidden">
+<body class="antialiased min-h-screen flex flex-col relative overflow-x-hidden text-white bg-navy">
     <div class="fixed top-0 left-1/4 w-96 h-96 bg-neon_yellow/10 rounded-full blur-[120px] -z-10"></div>
     <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-neon_orange/10 rounded-full blur-[120px] -z-10"></div>
 
     <div class="fixed top-4 right-6 flex space-x-2 z-50">
-        <button onclick="changeLang('uz')" class="px-3 py-1 glass-card text-xs font-bold hover:text-neon_yellow transition">UZ</button>
-        <button onclick="changeLang('ru')" class="px-3 py-1 glass-card text-xs font-bold hover:text-neon_yellow transition">RU</button>
-        <button onclick="changeLang('kg')" class="px-3 py-1 glass-card text-xs font-bold hover:text-neon_yellow transition">KG</button>
+        <button onclick="changeLang('uz')" class="px-3 py-1 glass-card text-xs font-bold hover:text-neon_yellow transition border border-white/10 rounded">UZ</button>
+        <button onclick="changeLang('ru')" class="px-3 py-1 glass-card text-xs font-bold hover:text-neon_yellow transition border border-white/10 rounded">RU</button>
+        <button onclick="changeLang('kg')" class="px-3 py-1 glass-card text-xs font-bold hover:text-neon_yellow transition border border-white/10 rounded">KG</button>
     </div>
 
-    <header class="pt-16 pb-8 px-6 text-center">
-        <div class="flex justify-center mb-6">
+    <header class="pt-16 pb-12 px-6 text-center">
+        <div class="flex justify-center mb-8">
             {% if logo_id %}
-            <img src="/api/image/{{ logo_id }}" class="h-24 w-auto object-contain shadow-2xl" alt="SSS Logo">
+            <div class="relative group">
+                <div class="absolute -inset-1 bg-neon_yellow/20 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+                <img src="/api/image/{{ logo_id }}" class="relative h-28 w-auto object-contain rounded-lg shadow-2xl" alt="SSS Logo">
+            </div>
             {% else %}
-            <div class="text-neon_yellow text-5xl font-bold font-heading text-glow">SSS</div>
+            <div class="text-neon_yellow text-6xl font-bold font-heading text-glow tracking-tighter">SSS</div>
             {% endif %}
         </div>
         
-        <h1 id="site-title" class="font-heading text-4xl md:text-6xl font-bold text-white mb-4 uppercase tracking-wider text-glow">
+        <h1 id="site-title" class="font-heading text-4xl md:text-7xl font-bold text-white mb-4 uppercase tracking-wider text-glow">
             SSS Online <span class="text-neon_yellow">Construction Materials</span> Shop
         </h1>
-        <p id="site-subtitle" class="text-xl md:text-2xl text-gray-300 font-heading mb-6 italic">Доим хизматингиздамиз!</p>
+        <p id="site-subtitle" class="text-xl md:text-2xl text-gray-300 font-heading mb-8 italic">Доим хизматингиздамиз!</p>
         <div class="inline-flex">
-            <a href="#katalog" id="btn-katalog" class="btn-neon px-8 py-3 rounded-lg text-lg uppercase tracking-wide">Каталогга ўтиш</a>
+            <a href="#katalog" id="btn-katalog" class="btn-neon px-10 py-4 rounded-lg text-lg uppercase tracking-widest font-bold">Каталогга ўтиш</a>
         </div>
     </header>
 
-    <section id="ads-container" class="max-w-6xl mx-auto px-6 mb-12 w-full"></section>
+    <section id="ads-container" class="max-w-6xl mx-auto px-6 mb-16 w-full"></section>
 
-    <section class="max-w-6xl mx-auto px-6 mb-16 w-full grid grid-cols-2 md:grid-cols-4 gap-4">
-        <a href="{{ info.telegram_bot | default('#') }}" target="_blank" class="glass-card flex flex-col items-center py-6 text-blue-400 hover:text-neon_yellow transition">
-            <i class="fa-brands fa-telegram text-4xl mb-2"></i><span class="font-heading font-bold">Ботга ўтиш</span>
+    <section class="max-w-6xl mx-auto px-6 mb-20 w-full grid grid-cols-2 md:grid-cols-4 gap-6">
+        <a href="{{ info.telegram_bot | default('#') }}" target="_blank" class="glass-card flex flex-col items-center py-8 text-blue-400 hover:text-neon_yellow transition group">
+            <i class="fa-brands fa-telegram text-5xl mb-3 group-hover:scale-110 transition-transform"></i>
+            <span id="label-bot" class="font-heading font-bold text-lg">Ботга ўтиш</span>
         </a>
-        <a href="{{ info.telegram_channel | default('#') }}" target="_blank" class="glass-card flex flex-col items-center py-6 text-blue-300 hover:text-neon_yellow transition">
-            <i class="fa-solid fa-bullhorn text-4xl mb-2"></i><span class="font-heading font-bold">Каналимиз</span>
+        <a href="{{ info.telegram_channel | default('#') }}" target="_blank" class="glass-card flex flex-col items-center py-8 text-blue-300 hover:text-neon_yellow transition group">
+            <i class="fa-solid fa-bullhorn text-5xl mb-3 group-hover:scale-110 transition-transform"></i>
+            <span id="label-channel" class="font-heading font-bold text-lg">Каналимиз</span>
         </a>
-        <a href="{{ info.whatsapp | default('#') }}" target="_blank" class="glass-card flex flex-col items-center py-6 text-green-400 hover:text-neon_yellow transition">
-            <i class="fa-brands fa-whatsapp text-4xl mb-2"></i><span class="font-heading font-bold">WhatsApp</span>
+        <a href="{{ info.whatsapp | default('#') }}" target="_blank" class="glass-card flex flex-col items-center py-8 text-green-400 hover:text-neon_yellow transition group">
+            <i class="fa-brands fa-whatsapp text-5xl mb-3 group-hover:scale-110 transition-transform"></i>
+            <span class="font-heading font-bold text-lg">WhatsApp</span>
         </a>
-        <a href="{{ info.instagram | default('#') }}" target="_blank" class="glass-card flex flex-col items-center py-6 text-pink-500 hover:text-neon_yellow transition">
-            <i class="fa-brands fa-instagram text-4xl mb-2"></i><span class="font-heading font-bold">Instagram</span>
+        <a href="{{ info.instagram | default('#') }}" target="_blank" class="glass-card flex flex-col items-center py-8 text-pink-500 hover:text-neon_yellow transition group">
+            <i class="fa-brands fa-instagram text-5xl mb-3 group-hover:scale-110 transition-transform"></i>
+            <span class="font-heading font-bold text-lg">Instagram</span>
         </a>
     </section>
 
-    <section class="max-w-6xl mx-auto px-6 mb-16 w-full">
-        <h2 id="services-title" class="font-heading text-3xl font-bold mb-6 border-l-4 border-neon_yellow pl-4 text-white">Бизнинг хизматлар</h2>
-        <div id="services-container" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+    <section class="max-w-6xl mx-auto px-6 mb-20 w-full">
+        <h2 id="services-title" class="font-heading text-4xl font-bold mb-10 border-l-8 border-neon_yellow pl-6 text-white uppercase tracking-wide">Бизнинг хизматлар</h2>
+        <div id="services-container" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
     </section>
 
-    <section id="katalog" class="max-w-6xl mx-auto px-6 mb-16 w-full flex-grow">
-        <h2 id="katalog-title" class="font-heading text-3xl font-bold mb-6 border-l-4 border-neon_yellow pl-4 text-white">Арзон қурилиш моллари</h2>
-        <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"></div>
+    <section id="katalog" class="max-w-6xl mx-auto px-6 mb-20 w-full flex-grow">
+        <h2 id="katalog-title" class="font-heading text-4xl font-bold mb-10 border-l-8 border-neon_yellow pl-6 text-white uppercase tracking-wide">Арзон қурилиш моллари</h2>
+        <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10"></div>
     </section>
 
     <section class="bg-navy_light border-t border-white/10 mt-auto">
-        <div class="max-w-6xl mx-auto px-6 py-12">
-            <h2 id="locations-title" class="font-heading text-3xl font-bold mb-8 text-center text-white text-glow">Бизнинг манзилlar ва контактлар</h2>
-            <div id="locations-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
+        <div class="max-w-6xl mx-auto px-6 py-20">
+            <h2 id="locations-title" class="font-heading text-4xl font-bold mb-12 text-center text-white text-glow uppercase tracking-wider">Бизнинг манзиллар ва контактлар</h2>
+            <div id="locations-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"></div>
             
-            <div class="glass-card p-6 text-center border-neon_orange/50">
-                <h3 id="about-title" class="font-heading text-2xl text-neon_yellow mb-2"><i class="fa-solid fa-circle-info"></i> Фирма ҳақида</h3>
-                <p class="text-gray-300 max-w-2xl mx-auto">{{ info.about }}</p>
-                <p class="text-white font-mono text-xl mt-4"><i class="fa-solid fa-phone text-neon_yellow"></i> {{ info.phone }}</p>
+            <div class="glass-card p-10 text-center border-neon_orange/30">
+                <h3 id="about-title" class="font-heading text-3xl text-neon_yellow mb-6"><i class="fa-solid fa-circle-info mr-3"></i> Фирма ҳақида</h3>
+                <p class="text-gray-300 max-w-3xl mx-auto text-lg leading-relaxed">{{ info.about }}</p>
+                <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-12 mt-10">
+                    <p class="text-white font-mono text-2xl font-bold"><i class="fa-solid fa-phone text-neon_yellow mr-3"></i> {{ info.phone }}</p>
+                    <p class="text-white font-mono text-lg opacity-70"><i class="fa-solid fa-clock text-neon_orange mr-3"></i> 08:00 - 20:00</p>
+                </div>
             </div>
         </div>
     </section>
 
     <script>
-        // Bot URLni jinja2 orqali olish
         const BOT_URL = "{{ info.telegram_bot | default('https://t.me/YourBot') }}";
     </script>
     <script src="/static/js/script.js"></script>
