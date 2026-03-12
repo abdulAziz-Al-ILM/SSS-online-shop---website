@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sifatli Qurilish Mollari | Doim Xizmatingizdamiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        // Tailwind uchun maxsus ranglar va shriftlar konfiguratsiyasi
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#0f172a',
+                        navy_light: '#1e293b',
+                        neon_yellow: '#facc15',
+                        neon_orange: '#f97316'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Rajdhani', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; }
+        /* Glassmorphism effekti (Rasmdagi uslub uchun) */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(250, 204, 21, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(250, 204, 21, 0.8);
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.15);
+            transform: translateY(-5px);
+        }
+        /* Neon yozuv effekti */
+        .text-glow { text-shadow: 0 0 15px rgba(250, 204, 21, 0.5); }
+        /* Tugma animatsiyasi */
+        .btn-neon {
+            background: linear-gradient(90deg, #facc15 0%, #f97316 100%);
+            color: #0f172a;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        .btn-neon:hover {
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.6);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative overflow-x-hidden">
+    <div class="fixed top-0 left-1/4 w-96 h-96 bg-neon_yellow/10 rounded-full blur-[120px] -z-10"></div>
+    <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-neon_orange/10 rounded-full blur-[120px] -z-10"></div>
+
+    <header class="pt-16 pb-12 px-6 text-center">
+        <h1 class="font-heading text-5xl md:text-7xl font-bold text-white mb-4 uppercase tracking-wider text-glow">
+            Qurilish <span class="text-neon_yellow">Mollari</span>
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-300 font-heading mb-8">Doim xizmatingizdamiz!</p>
+        <div class="inline-flex space-x-4">
+            <a href="#katalog" class="btn-neon px-8 py-3 rounded-lg text-lg uppercase tracking-wide">
+                <i class="fa-solid fa-layer-group mr-2"></i> Katalog
+            </a>
+        </div>
+    </header>
+
+    <section class="max-w-6xl mx-auto px-6 mb-16 w-full">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="https://t.me/SeningBoting" target="_blank" class="glass-card flex items-center justify-center py-4 px-6 text-blue-400 hover:text-neon_yellow group">
+                <i class="fa-brands fa-telegram text-3xl mr-3 group-hover:scale-110 transition-transform"></i>
+                <span class="font-heading font-semibold text-lg">Telegram Bot</span>
+            </a>
+            <a href="https://t.me/SeningKanaling" target="_blank" class="glass-card flex items-center justify-center py-4 px-6 text-blue-400 hover:text-neon_yellow group">
+                <i class="fa-solid fa-bullhorn text-3xl mr-3 group-hover:scale-110 transition-transform"></i>
+                <span class="font-heading font-semibold text-lg">Kanal</span>
+            </a>
+            <a href="https://wa.me/998901234567" target="_blank" class="glass-card flex items-center justify-center py-4 px-6 text-green-400 hover:text-neon_yellow group">
+                <i class="fa-brands fa-whatsapp text-3xl mr-3 group-hover:scale-110 transition-transform"></i>
+                <span class="font-heading font-semibold text-lg">WhatsApp</span>
+            </a>
+            <a href="https://instagram.com/SeningProfiling" target="_blank" class="glass-card flex items-center justify-center py-4 px-6 text-pink-500 hover:text-neon_yellow group">
+                <i class="fa-brands fa-instagram text-3xl mr-3 group-hover:scale-110 transition-transform"></i>
+                <span class="font-heading font-semibold text-lg">Instagram</span>
+            </a>
+        </div>
+    </section>
+
+    <section id="katalog" class="max-w-6xl mx-auto px-6 mb-16 w-full flex-grow">
+        <h2 class="font-heading text-3xl md:text-4xl font-bold mb-8 border-l-4 border-neon_yellow pl-4">Arzon Qurilish Mollari</h2>
+        
+        <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            <div class="col-span-full text-center py-12">
+                <i class="fa-solid fa-spinner fa-spin text-4xl text-neon_yellow"></i>
+                <p class="mt-4 text-gray-400 font-heading text-lg">Baza bilan bog'lanilmoqda...</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-navy_light border-t border-white/10 mt-auto">
+        <div class="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <h3 class="font-heading text-2xl text-neon_yellow mb-4"><i class="fa-solid fa-building mr-2"></i> Firma Ma'lumoti</h3>
+                <p class="text-gray-300">{{ info.about | default('Biz eng sifatli va arzon qurilish mollarini taklif etamiz. Tajriba va ishonch!') }}</p>
+            </div>
+            <div>
+                <h3 class="font-heading text-2xl text-neon_yellow mb-4"><i class="fa-solid fa-phone mr-2"></i> Aloqa</h3>
+                <p class="text-gray-300 mb-2 font-mono text-lg">{{ info.phone | default('+998 (90) 000-00-00') }}</p>
+                <p class="text-gray-300">Har kuni: 08:00 - 20:00</p>
+            </div>
+            <div>
+                <h3 class="font-heading text-2xl text-neon_yellow mb-4"><i class="fa-solid fa-map-location-dot mr-2"></i> Lokatsiya</h3>
+                <p class="text-gray-300">{{ info.address | default('Manzil kiritilmagan') }}</p>
+            </div>
+        </div>
+    </section>
+
+    <div id="order-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+        <div class="glass-card w-full max-w-md p-8 relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            <h3 class="font-heading text-2xl text-neon_yellow mb-6">Buyurtma berish</h3>
+            <div id="modal-product-name" class="text-lg text-white mb-4 font-bold"></div>
+            
+            <form id="order-form" onsubmit="submitOrder(event)">
+                <input type="hidden" id="product_id">
+                <div class="mb-4">
+                    <label class="block text-sm text-gray-400 mb-1">Ismingiz</label>
+                    <input type="text" id="user_name" required class="w-full bg-navy border border-gray-600 rounded px-4 py-2 text-white focus:outline-none focus:border-neon_yellow">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm text-gray-400 mb-1">Telefon raqamingiz</label>
+                    <input type="tel" id="user_phone" required placeholder="+998..." class="w-full bg-navy border border-gray-600 rounded px-4 py-2 text-white focus:outline-none focus:border-neon_yellow">
+                </div>
+                <button type="submit" class="w-full btn-neon py-3 rounded-lg">Tasdiqlash</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Backenddan mahsulotlarni tortib olish
+        async function fetchProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const data = await response.json();
+                
+                const container = document.getElementById('products-container');
+                container.innerHTML = ''; // Loaderni tozalash
+
+                if (data.status === 'success' && data.data.length > 0) {
+                    data.data.forEach(product => {
+                        const html = `
+                            <div class="glass-card flex flex-col h-full">
+                                <div class="p-6 flex-grow">
+                                    <h3 class="font-heading text-2xl font-bold text-white mb-2">${product.name}</h3>
+                                    <p class="text-neon_yellow text-xl font-mono font-bold mb-4">${product.price.toLocaleString()} so'm</p>
+                                    <p class="text-gray-400 text-sm mb-4">${product.description || 'Sifatli mahsulot'}</p>
+                                    <div class="flex items-center text-sm text-gray-500 mb-4">
+                                        <i class="fa-solid fa-box mr-2"></i> Omborda: ${product.stock} ta
+                                    </div>
+                                </div>
+                                <div class="p-6 pt-0 mt-auto">
+                                    <button onclick="openModal('${product._id}', '${product.name}')" class="w-full border border-neon_yellow text-neon_yellow hover:bg-neon_yellow hover:text-navy font-bold py-2 rounded transition-colors duration-300">
+                                        Buyurtma berish
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        container.innerHTML += html;
+                    });
+                } else {
+                    container.innerHTML = '<p class="col-span-full text-center text-gray-400">Hozircha mahsulotlar yo\'q.</p>';
+                }
+            } catch (error) {
+                console.error("Baza bilan xatolik:", error);
+                document.getElementById('products-container').innerHTML = '<p class="col-span-full text-center text-red-500">Xatolik yuz berdi. Iltimos keyinroq urining.</p>';
+            }
+        }
+
+        // Buyurtma modalini ochish va yopish
+        function openModal(id, name) {
+            document.getElementById('product_id').value = id;
+            document.getElementById('modal-product-name').innerText = name;
+            document.getElementById('order-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('order-modal').classList.add('hidden');
+        }
+
+        // Buyurtmani yuborish
+        async function submitOrder(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerText = "Yuborilmoqda...";
+            btn.disabled = true;
+
+            const payload = {
+                product_id: document.getElementById('product_id').value,
+                name: document.getElementById('user_name').value,
+                phone: document.getElementById('user_phone').value
+            };
+
+            try {
+                const res = await fetch('/api/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (res.ok) {
+                    alert("Buyurtma qabul qilindi! Tez orada aloqaga chiqamiz.");
+                    closeModal();
+                    e.target.reset();
+                }
+            } catch (err) {
+                alert("Xatolik yuz berdi!");
+            } finally {
+                btn.innerText = "Tasdiqlash";
+                btn.disabled = false;
+            }
+        }
+
+        // Sayt yuklanganda ishlashni boshlaydi
+        window.onload = fetchProducts;
+    </script>
+</body>
+</html>
