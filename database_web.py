@@ -28,6 +28,12 @@ async def get_company_info():
         return info
     return {"address": "Asosiy manzil kiritilmagan", "phone": "+998", "about": "Doim xizmatingizdamiz"}
 
+# ...
+async def get_logo_id():
+    logo = await settings_col.find_one({"type": "logo"})
+    return logo['file_id'] if logo else None
+# ...
+
 async def get_all_services():
     cursor = services_col.find({})
     services = await cursor.to_list(length=20)
