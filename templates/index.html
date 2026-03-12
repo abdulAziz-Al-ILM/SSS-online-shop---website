@@ -2,76 +2,151 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSS Online Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SSS Online | Sifatli Qurilish Mollari</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="stylesheet" href="/static/css/style.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#0f172a',
+                        navy_light: '#1e293b',
+                        neon_yellow: '#facc15',
+                        neon_orange: '#f97316'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-[#0f172a] text-white overflow-x-hidden">
+<body class="bg-navy text-white min-h-screen flex flex-col font-sans selection:bg-neon_yellow selection:text-navy">
 
-    <div class="fixed top-6 right-6 flex space-x-2 z-50">
-        <button onclick="changeLang('uz')" class="px-3 py-1 glass-card border border-white/10 rounded-lg text-xs font-bold">УЗ</button>
-        <button onclick="changeLang('ru')" class="px-3 py-1 glass-card border border-white/10 rounded-lg text-xs font-bold">РУ</button>
-        <button onclick="changeLang('kg')" class="px-3 py-1 glass-card border border-white/10 rounded-lg text-xs font-bold">КГ</button>
-    </div>
+    <nav class="fixed top-6 right-6 flex space-x-2 z-[100]">
+        <button onclick="changeLang('uz')" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all">УЗ</button>
+        <button onclick="changeLang('ru')" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all">РУ</button>
+        <button onclick="changeLang('kg')" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all">КГ</button>
+    </nav>
 
-    <header class="relative w-full h-[65vh] flex items-end">
-        <div class="absolute inset-0 z-0">
+    <header class="relative w-full h-[60vh] md:h-[75vh] flex items-end overflow-hidden">
+        <div class="absolute inset-0 z-0 overflow-hidden">
             {% if info.logo_id %}
-            <img src="/api/image/{{ info.logo_id }}" class="w-full h-full object-cover brightness-[0.4] blur-xl scale-125">
+            <img src="/api/image/{{ info.logo_id }}" class="w-full h-full object-cover brightness-[0.35] blur-[40px] scale-150 transform transition-transform duration-[10s] hover:scale-110" alt="BG">
+            {% else %}
+            <div class="w-full h-full bg-navy_light"></div>
             {% endif %}
         </div>
 
-        <div class="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/70 to-transparent z-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-navy via-navy/60 to-transparent z-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-navy/40 via-transparent to-transparent z-10"></div>
 
-        <div class="relative z-20 max-w-6xl mx-auto px-6 pb-12 w-full flex flex-col items-center md:items-start">
-            <div class="glass-card p-4 rounded-[2.5rem] border-2 border-white/10 shadow-2xl mb-6">
-                {% if info.logo_id %}
-                <img src="/api/image/{{ info.logo_id }}" class="h-32 w-32 md:h-44 md:w-44 object-contain">
-                {% else %}
-                <div class="h-32 w-32 flex items-center justify-center text-5xl font-bold text-[#facc15]">SSS</div>
-                {% endif %}
+        <div class="relative z-20 max-w-7xl mx-auto px-6 pb-16 w-full flex flex-col items-center md:items-start space-y-6">
+            <div class="main-logo-box group p-1 rounded-[3rem] bg-gradient-to-br from-white/20 to-transparent border border-white/10 shadow-2xl">
+                <div class="bg-navy/80 backdrop-blur-2xl p-6 rounded-[2.8rem] border border-white/5 group-hover:border-neon_yellow/30 transition-colors duration-500">
+                    {% if info.logo_id %}
+                    <img src="/api/image/{{ info.logo_id }}" class="h-32 w-32 md:h-48 md:w-48 object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]" alt="Main Logo">
+                    {% else %}
+                    <div class="h-32 w-32 flex items-center justify-center text-neon_yellow text-6xl font-bold font-heading">SSS</div>
+                    {% endif %}
+                </div>
             </div>
-            <div class="text-center md:text-left">
-                <h1 class="text-6xl md:text-8xl font-bold tracking-tighter leading-none mb-2">SSS</h1>
-                <p class="text-[#facc15] font-bold uppercase tracking-[0.4em] text-xs md:text-sm">Construction Materials Shop</p>
+            
+            <div class="text-center md:text-left space-y-2">
+                <h1 class="text-6xl md:text-9xl font-heading font-black tracking-tighter text-white drop-shadow-2xl">
+                    SSS <span class="text-neon_yellow italic font-light">Online</span>
+                </h1>
+                <p class="text-neon_yellow font-bold uppercase tracking-[0.6em] text-xs md:text-base opacity-80 pl-2 border-l-2 border-neon_orange ml-2">
+                    Premium Construction Materials
+                </p>
             </div>
         </div>
     </header>
 
-    <section class="text-center py-10">
-        <p id="site-subtitle" class="text-gray-400 italic mb-8">Доим хизматингиздамиз!</p>
-        <a href="#katalog" id="btn-katalog" class="btn-neon px-12 py-4 rounded-2xl text-lg font-bold tracking-widest uppercase">Каталогга ўтиш</a>
-    </section>
+    <main class="relative z-30 -mt-10 md:-mt-20">
+        <section class="text-center px-6 mb-20">
+            <div class="max-w-xl mx-auto glass-card p-10 space-y-6 border-b-4 border-b-neon_orange">
+                <p id="site-subtitle" class="text-xl md:text-2xl text-gray-300 font-heading italic">Доим хизматингиздамиз!</p>
+                <div class="flex justify-center">
+                    <a href="#katalog" id="btn-katalog" class="btn-neon px-12 py-5 rounded-2xl text-xl font-bold tracking-widest uppercase shadow-2xl">
+                        Каталогга ўтиш
+                    </a>
+                </div>
+            </div>
+        </section>
 
-    <div id="ads-container" class="max-w-6xl mx-auto px-6 mb-12"></div>
-    
-    <div class="max-w-6xl mx-auto px-6 mb-20 grid grid-cols-2 md:grid-cols-4 gap-4">
-        <a href="{{ info.telegram_bot }}" class="glass-card p-6 text-center rounded-3xl"><i class="fa-brands fa-telegram text-3xl mb-2 text-blue-400"></i><p id="label-bot" class="text-sm font-bold">Бот</p></a>
-        <a href="{{ info.telegram_channel }}" class="glass-card p-6 text-center rounded-3xl"><i class="fa-solid fa-bullhorn text-3xl mb-2 text-blue-300"></i><p id="label-channel" class="text-sm font-bold">Канал</p></a>
-        <a href="{{ info.whatsapp }}" class="glass-card p-6 text-center rounded-3xl"><i class="fa-brands fa-whatsapp text-3xl mb-2 text-green-400"></i><p class="text-sm font-bold">WhatsApp</p></a>
-        <a href="{{ info.instagram }}" class="glass-card p-6 text-center rounded-3xl"><i class="fa-brands fa-instagram text-3xl mb-2 text-pink-500"></i><p class="text-sm font-bold">Instagram</p></a>
-    </div>
+        <section id="ads-container" class="max-w-7xl mx-auto px-6 mb-20 grid grid-cols-1 gap-6"></section>
 
-    <section class="max-w-6xl mx-auto px-6 mb-20">
-        <h2 id="services-title" class="text-3xl font-bold mb-10 border-l-4 border-[#facc15] pl-4 uppercase">Хизматлар</h2>
-        <div id="services-container" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
-    </section>
+        <section class="max-w-7xl mx-auto px-6 mb-24 grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <a href="{{ info.telegram_bot }}" target="_blank" class="social-card group">
+                <i class="fa-brands fa-telegram text-5xl mb-4 text-blue-400 group-hover:scale-110 transition"></i>
+                <p id="label-bot" class="font-heading font-bold text-lg">Ботга ўтиш</p>
+            </a>
+            <a href="{{ info.telegram_channel }}" target="_blank" class="social-card group">
+                <i class="fa-solid fa-bullhorn text-5xl mb-4 text-blue-300 group-hover:scale-110 transition"></i>
+                <p id="label-channel" class="font-heading font-bold text-lg">Каналимиз</p>
+            </a>
+            <a href="{{ info.whatsapp }}" target="_blank" class="social-card group">
+                <i class="fa-brands fa-whatsapp text-5xl mb-4 text-green-400 group-hover:scale-110 transition"></i>
+                <p class="font-heading font-bold text-lg">WhatsApp</p>
+            </a>
+            <a href="{{ info.instagram }}" target="_blank" class="social-card group">
+                <i class="fa-brands fa-instagram text-5xl mb-4 text-pink-500 group-hover:scale-110 transition"></i>
+                <p class="font-heading font-bold text-lg">Instagram</p>
+            </a>
+        </section>
 
-    <section id="katalog" class="max-w-6xl mx-auto px-6 mb-20">
-        <h2 id="katalog-title" class="text-3xl font-bold mb-10 border-l-4 border-[#facc15] pl-4 uppercase">Маҳсулотлар</h2>
-        <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"></div>
-    </section>
+        <section class="max-w-7xl mx-auto px-6 mb-24">
+            <div class="flex items-center space-x-4 mb-12">
+                <div class="h-10 w-2 bg-neon_yellow rounded-full"></div>
+                <h2 id="services-title" class="font-heading text-4xl font-bold uppercase tracking-widest">Бизning хизматлар</h2>
+            </div>
+            <div id="services-container" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+        </section>
 
-    <footer class="bg-[#1e293b] py-20 mt-auto border-t border-white/5">
-        <div class="max-w-6xl mx-auto px-6">
-            <div id="locations-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"></div>
-            <div class="glass-card p-10 text-center rounded-[2.5rem]">
-                <h3 id="about-title" class="text-2xl font-bold text-[#facc15] mb-4">Фирма ҳақида</h3>
-                <p class="text-gray-300 mb-6">{{ info.about }}</p>
-                <p class="text-3xl font-bold"><i class="fa-solid fa-phone text-[#facc15] mr-2"></i>{{ info.phone }}</p>
+        <section id="katalog" class="max-w-7xl mx-auto px-6 mb-32">
+            <div class="flex items-center space-x-4 mb-12">
+                <div class="h-10 w-2 bg-neon_orange rounded-full"></div>
+                <h2 id="katalog-title" class="font-heading text-4xl font-bold uppercase tracking-widest">Арзон қурилиш моллари</h2>
+            </div>
+            <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"></div>
+        </section>
+    </main>
+
+    <footer class="bg-navy_light border-t border-white/10 pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 space-y-4">
+                <h2 id="locations-title" class="font-heading text-4xl font-bold uppercase tracking-widest">Бизнинг манзиллар</h2>
+                <div class="w-24 h-1 bg-neon_yellow mx-auto rounded-full"></div>
+            </div>
+            
+            <div id="locations-container" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24"></div>
+            
+            <div class="glass-card p-12 text-center border-neon_orange/20 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-neon_orange/10 rounded-full blur-3xl"></div>
+                <h3 id="about-title" class="font-heading text-3xl text-neon_yellow mb-6">Фирма ҳақида</h3>
+                <p class="text-gray-400 max-w-4xl mx-auto text-lg leading-relaxed mb-10">{{ info.about }}</p>
+                <div class="flex justify-center items-center">
+                    <div class="bg-navy px-8 py-4 rounded-2xl border border-white/10 shadow-inner">
+                        <p class="text-3xl font-mono font-bold text-white tracking-tighter">
+                            <i class="fa-solid fa-phone text-neon_yellow mr-4"></i>{{ info.phone }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-20 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm">
+                <p>&copy; 2026 SSS Online Shop. All Rights Reserved.</p>
+                <p class="font-heading tracking-widest">Powered by <span class="text-white">ILM CyberArk</span></p>
             </div>
         </div>
     </footer>
