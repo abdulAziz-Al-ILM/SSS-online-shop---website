@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SSS Online | Sifatli Qurilish Mollari</title>
+    <title>SSS Online Shop | Sifatli Qurilish Mollari</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@
         }
     </script>
 </head>
-<body class="bg-navy text-white min-h-screen flex flex-col font-sans selection:bg-neon_yellow selection:text-navy">
+<body class="bg-navy text-white min-h-screen flex flex-col font-sans selection:bg-neon_yellow selection:text-navy overflow-x-hidden">
 
     <nav class="fixed top-6 right-6 flex space-x-2 z-[100]">
         <button onclick="changeLang('uz')" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all">УЗ</button>
@@ -38,35 +38,28 @@
         <button onclick="changeLang('kg')" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all">КГ</button>
     </nav>
 
-    <header class="relative w-full h-[60vh] md:h-[75vh] flex items-end overflow-hidden">
-        <div class="absolute inset-0 z-0 overflow-hidden">
+    <header class="relative w-full h-[80vh] md:h-[85vh] flex items-center justify-center overflow-hidden">
+        
+        <div class="absolute inset-0 z-0">
             {% if info.logo_id %}
-            <img src="/api/image/{{ info.logo_id }}" class="w-full h-full object-cover brightness-[0.35] blur-[40px] scale-150 transform transition-transform duration-[10s] hover:scale-110" alt="BG">
+            <img src="/api/image/{{ info.logo_id }}" class="w-full h-full object-contain brightness-[0.7]" alt="SSS Big Logo">
             {% else %}
-            <div class="w-full h-full bg-navy_light"></div>
+            <div class="w-full h-full bg-navy_light flex items-center justify-center">
+                <p class="text-neon_yellow text-9xl font-black font-heading tracking-tighter">SSS</p>
+            </div>
             {% endif %}
         </div>
 
-        <div class="absolute inset-0 bg-gradient-to-t from-navy via-navy/60 to-transparent z-10"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-navy/40 via-transparent to-transparent z-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-navy via-navy/90 to-transparent z-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-navy/30 via-transparent to-transparent z-10"></div>
 
-        <div class="relative z-20 max-w-7xl mx-auto px-6 pb-16 w-full flex flex-col items-center md:items-start space-y-6">
-            <div class="main-logo-box group p-1 rounded-[3rem] bg-gradient-to-br from-white/20 to-transparent border border-white/10 shadow-2xl">
-                <div class="bg-navy/80 backdrop-blur-2xl p-6 rounded-[2.8rem] border border-white/5 group-hover:border-neon_yellow/30 transition-colors duration-500">
-                    {% if info.logo_id %}
-                    <img src="/api/image/{{ info.logo_id }}" class="h-32 w-32 md:h-48 md:w-48 object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]" alt="Main Logo">
-                    {% else %}
-                    <div class="h-32 w-32 flex items-center justify-center text-neon_yellow text-6xl font-bold font-heading">SSS</div>
-                    {% endif %}
-                </div>
-            </div>
-            
-            <div class="text-center md:text-left space-y-2">
-                <h1 class="text-6xl md:text-9xl font-heading font-black tracking-tighter text-white drop-shadow-2xl">
+        <div class="relative z-20 h-full max-w-7xl mx-auto px-6 flex flex-col justify-end pb-16 md:pb-24 w-full">
+            <div class="text-center md:text-left space-y-3">
+                <h1 class="text-7xl md:text-9xl font-heading font-black tracking-tighter text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.4)]">
                     SSS <span class="text-neon_yellow italic font-light">Online</span>
                 </h1>
-                <p class="text-neon_yellow font-bold uppercase tracking-[0.6em] text-xs md:text-base opacity-80 pl-2 border-l-2 border-neon_orange ml-2">
-                    Premium Construction Materials
+                <p class="text-neon_yellow font-bold uppercase tracking-[0.6em] text-xs md:text-base opacity-90 pl-2 border-l-2 border-neon_orange ml-2 drop-shadow-lg">
+                    Premium Construction Materials Shop
                 </p>
             </div>
         </div>
