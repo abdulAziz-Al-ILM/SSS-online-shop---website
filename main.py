@@ -8,7 +8,8 @@ import uvicorn
 
 from database_web import (
     get_all_active_products, get_company_info, 
-    get_all_services, get_all_locations, get_active_ads
+    get_all_services, get_all_locations, get_active_ads,
+    create_web_order
 )
 
 app = FastAPI(title="ILM Construction Web API")
@@ -28,7 +29,6 @@ async def read_root(request: Request):
     info = await get_company_info()
     return templates.TemplateResponse("index.html", {"request": request, "info": info})
 
-# -- API MARSHRUTLAR --
 @app.get("/api/products")
 async def api_get_products():
     products = await get_all_active_products()
@@ -68,8 +68,16 @@ async def get_telegram_image(file_id: str):
 
 @app.post("/api/order")
 async def api_create_order(order_data: dict):
-    # Buyurtma logikasi
-    return {"status": "success", "message": "Buyurtma qabul qilindi"}
+    product_id = order_data.get("product_id")
+    name = order_data.get("name")
+    phone = order_data.get("phone")
+    
+    success = await create_web_order(product_id, name, phone)
+    
+    if success:
+        return {"status": "success", "message": "Buyurtma qabul qilindi va bazaga yozildi"}
+    else:
+        return {"status": "error", "message": "Xatolik yuz berdi"}
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
