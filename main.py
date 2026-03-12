@@ -6,11 +6,13 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
 
-from database_web import get_all_active_products, get_company_info
+from database_web import (
+    get_all_active_products, get_company_info, 
+    get_all_services, get_all_locations, get_active_ads
+)
 
 app = FastAPI(title="ILM Construction Web API")
 
-# Papkalarni yaratish mantiqi
 os.makedirs("static/css", exist_ok=True)
 os.makedirs("static/js", exist_ok=True)
 os.makedirs("static/img", exist_ok=True)
@@ -26,21 +28,34 @@ async def read_root(request: Request):
     info = await get_company_info()
     return templates.TemplateResponse("index.html", {"request": request, "info": info})
 
+# -- API MARSHRUTLAR --
 @app.get("/api/products")
 async def api_get_products():
     products = await get_all_active_products()
     return {"status": "success", "data": products}
 
-# Telegram rasmlarini saytga o'tkazib beruvchi ko'prik
+@app.get("/api/services")
+async def api_get_services():
+    services = await get_all_services()
+    return {"status": "success", "data": services}
+
+@app.get("/api/locations")
+async def api_get_locations():
+    locations = await get_all_locations()
+    return {"status": "success", "data": locations}
+
+@app.get("/api/ads")
+async def api_get_ads():
+    ads = await get_active_ads()
+    return {"status": "success", "data": ads}
+
 @app.get("/api/image/{file_id}")
 async def get_telegram_image(file_id: str):
     try:
         async with httpx.AsyncClient() as client:
             file_info_res = await client.get(f"https://api.telegram.org/bot{BOT_TOKEN}/getFile?file_id={file_id}")
             file_info = file_info_res.json()
-            
-            if not file_info.get("ok"):
-                return {"error": "Rasm topilmadi"}
+            if not file_info.get("ok"): return {"error": "Rasm topilmadi"}
             
             file_path = file_info["result"]["file_path"]
             file_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file_path}"
@@ -53,7 +68,7 @@ async def get_telegram_image(file_id: str):
 
 @app.post("/api/order")
 async def api_create_order(order_data: dict):
-    # Bu yerda buyurtma mantiqi
+    # Buyurtma logikasi
     return {"status": "success", "message": "Buyurtma qabul qilindi"}
 
 if __name__ == "__main__":
