@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qurilish Mollari | ILM Construction</title>
+    <title>SSS Online Construction Materials Shop</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -23,69 +23,74 @@
     <div class="fixed top-0 left-1/4 w-96 h-96 bg-neon_yellow/10 rounded-full blur-[120px] -z-10"></div>
     <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-neon_orange/10 rounded-full blur-[120px] -z-10"></div>
 
+    <div class="fixed top-4 right-6 flex space-x-2 z-50">
+        <button onclick="changeLang('uz')" class="px-3 py-1 glass-card text-xs font-bold hover:text-neon_yellow transition">UZ</button>
+        <button onclick="changeLang('ru')" class="px-3 py-1 glass-card text-xs font-bold hover:text-neon_yellow transition">RU</button>
+        <button onclick="changeLang('kg')" class="px-3 py-1 glass-card text-xs font-bold hover:text-neon_yellow transition">KG</button>
+    </div>
+
     <header class="pt-16 pb-8 px-6 text-center">
-        <h1 class="font-heading text-5xl md:text-7xl font-bold text-white mb-4 uppercase tracking-wider text-glow">
-            Qurilish <span class="text-neon_yellow">Mollari</span>
+        <div class="flex justify-center mb-6">
+            {% if logo_id %}
+            <img src="/api/image/{{ logo_id }}" class="h-24 w-auto object-contain shadow-2xl" alt="SSS Logo">
+            {% else %}
+            <div class="text-neon_yellow text-5xl font-bold font-heading text-glow">SSS</div>
+            {% endif %}
+        </div>
+        
+        <h1 id="site-title" class="font-heading text-4xl md:text-6xl font-bold text-white mb-4 uppercase tracking-wider text-glow">
+            SSS Online <span class="text-neon_yellow">Construction Materials</span> Shop
         </h1>
-        <p class="text-xl md:text-2xl text-gray-300 font-heading mb-6">Doim xizmatingizdamiz!</p>
-        <div class="inline-flex space-x-4">
-            <a href="#katalog" class="btn-neon px-8 py-3 rounded-lg text-lg uppercase tracking-wide">Katalogga o'tish</a>
+        <p id="site-subtitle" class="text-xl md:text-2xl text-gray-300 font-heading mb-6 italic">Доим хизматингиздамиз!</p>
+        <div class="inline-flex">
+            <a href="#katalog" id="btn-katalog" class="btn-neon px-8 py-3 rounded-lg text-lg uppercase tracking-wide">Каталогга ўтиш</a>
         </div>
     </header>
 
     <section id="ads-container" class="max-w-6xl mx-auto px-6 mb-12 w-full"></section>
 
     <section class="max-w-6xl mx-auto px-6 mb-16 w-full grid grid-cols-2 md:grid-cols-4 gap-4">
-        <a href="#" class="glass-card flex flex-col items-center py-6 text-blue-400 hover:text-neon_yellow transition">
-            <i class="fa-brands fa-telegram text-4xl mb-2"></i><span class="font-heading font-bold">Botga o'tish</span>
+        <a href="{{ info.telegram_bot | default('#') }}" target="_blank" class="glass-card flex flex-col items-center py-6 text-blue-400 hover:text-neon_yellow transition">
+            <i class="fa-brands fa-telegram text-4xl mb-2"></i><span class="font-heading font-bold">Ботга ўтиш</span>
         </a>
-        <a href="#" class="glass-card flex flex-col items-center py-6 text-blue-300 hover:text-neon_yellow transition">
-            <i class="fa-solid fa-bullhorn text-4xl mb-2"></i><span class="font-heading font-bold">Kanalimiz</span>
+        <a href="{{ info.telegram_channel | default('#') }}" target="_blank" class="glass-card flex flex-col items-center py-6 text-blue-300 hover:text-neon_yellow transition">
+            <i class="fa-solid fa-bullhorn text-4xl mb-2"></i><span class="font-heading font-bold">Каналимиз</span>
         </a>
-        <a href="#" class="glass-card flex flex-col items-center py-6 text-green-400 hover:text-neon_yellow transition">
+        <a href="{{ info.whatsapp | default('#') }}" target="_blank" class="glass-card flex flex-col items-center py-6 text-green-400 hover:text-neon_yellow transition">
             <i class="fa-brands fa-whatsapp text-4xl mb-2"></i><span class="font-heading font-bold">WhatsApp</span>
         </a>
-        <a href="#" class="glass-card flex flex-col items-center py-6 text-pink-500 hover:text-neon_yellow transition">
+        <a href="{{ info.instagram | default('#') }}" target="_blank" class="glass-card flex flex-col items-center py-6 text-pink-500 hover:text-neon_yellow transition">
             <i class="fa-brands fa-instagram text-4xl mb-2"></i><span class="font-heading font-bold">Instagram</span>
         </a>
     </section>
 
     <section class="max-w-6xl mx-auto px-6 mb-16 w-full">
-        <h2 class="font-heading text-3xl font-bold mb-6 border-l-4 border-neon_yellow pl-4 text-white">Bizning Xizmatlar</h2>
+        <h2 id="services-title" class="font-heading text-3xl font-bold mb-6 border-l-4 border-neon_yellow pl-4 text-white">Бизнинг хизматлар</h2>
         <div id="services-container" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
     </section>
 
     <section id="katalog" class="max-w-6xl mx-auto px-6 mb-16 w-full flex-grow">
-        <h2 class="font-heading text-3xl font-bold mb-6 border-l-4 border-neon_yellow pl-4 text-white">Arzon Qurilish Mollari</h2>
+        <h2 id="katalog-title" class="font-heading text-3xl font-bold mb-6 border-l-4 border-neon_yellow pl-4 text-white">Арзон қурилиш моллари</h2>
         <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"></div>
     </section>
 
     <section class="bg-navy_light border-t border-white/10 mt-auto">
         <div class="max-w-6xl mx-auto px-6 py-12">
-            <h2 class="font-heading text-3xl font-bold mb-8 text-center text-white text-glow">Bizning Manzillar va Kontaktlar</h2>
+            <h2 id="locations-title" class="font-heading text-3xl font-bold mb-8 text-center text-white text-glow">Бизнинг манзилlar ва контактлар</h2>
             <div id="locations-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
             
             <div class="glass-card p-6 text-center border-neon_orange/50">
-                <h3 class="font-heading text-2xl text-neon_yellow mb-2"><i class="fa-solid fa-circle-info"></i> Firma haqida</h3>
+                <h3 id="about-title" class="font-heading text-2xl text-neon_yellow mb-2"><i class="fa-solid fa-circle-info"></i> Фирма ҳақида</h3>
                 <p class="text-gray-300 max-w-2xl mx-auto">{{ info.about }}</p>
                 <p class="text-white font-mono text-xl mt-4"><i class="fa-solid fa-phone text-neon_yellow"></i> {{ info.phone }}</p>
             </div>
         </div>
     </section>
 
-    <div id="order-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex-col items-center justify-center">
-        <div class="glass-card w-full max-w-md p-8 relative">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-2xl"></i></button>
-            <h3 class="font-heading text-2xl text-neon_yellow mb-4">Buyurtma berish</h3>
-            <div id="modal-product-name" class="text-lg text-white mb-4 font-bold"></div>
-            <form id="order-form" onsubmit="submitOrder(event)">
-                <input type="hidden" id="product_id">
-                <input type="text" id="user_name" required placeholder="Ismingiz" class="w-full bg-navy border border-gray-600 rounded px-4 py-3 text-white mb-4 focus:border-neon_yellow outline-none">
-                <input type="tel" id="user_phone" required placeholder="+998..." class="w-full bg-navy border border-gray-600 rounded px-4 py-3 text-white mb-6 focus:border-neon_yellow outline-none">
-                <button type="submit" class="w-full btn-neon py-3 rounded-lg text-lg">Tasdiqlash</button>
-            </form>
-        </div>
-    </div>
+    <script>
+        // Bot URLni jinja2 orqali olish
+        const BOT_URL = "{{ info.telegram_bot | default('https://t.me/YourBot') }}";
+    </script>
     <script src="/static/js/script.js"></script>
 </body>
 </html>
