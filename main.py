@@ -34,6 +34,13 @@ async def api_get_products():
     products = await get_all_active_products()
     return {"status": "success", "data": products}
 
+# ...
+@app.get("/", response_class=HTMLResponse)
+async def read_root(request: Request):
+    info = await get_company_info()
+    logo_id = await get_logo_id() # Yangi
+    return templates.TemplateResponse("index.html", {"request": request, "info": info, "logo_id": logo_id})
+# ...
 @app.get("/api/services")
 async def api_get_services():
     services = await get_all_services()
