@@ -1,7 +1,5 @@
-/* SSS ONLINE SHOP - CORE STYLESHEET v3.5
-    Concept: Ultra-Modern / Edge-to-Edge / High Contrast
-    Developer: AI Assistant for SSS CEO
-    Total Lines: 200+
+/* SSS ONLINE SHOP - CORE STYLESHEET v4.0
+    Concept: Ultra-Modern / Edge-to-Edge / High Contrast / Showcase Grid
 */
 
 /* 1. FUNDAMENTALS */
@@ -40,7 +38,7 @@ p, span, div, button {
     font-family: 'Inter', sans-serif;
 }
 
-/* 3. CUSTOM SCROLLBAR (PRO) */
+/* 3. CUSTOM SCROLLBAR (ASOSIY SAHIFA UCHUN) */
 ::-webkit-scrollbar {
     width: 5px;
 }
@@ -54,7 +52,6 @@ p, span, div, button {
 
 /* 4. IMMERSIVE HERO REFINEMENT */
 .hero-image {
-    /* Tiniqlikni ta'minlash uchun blur olib tashlandi */
     filter: brightness(0.85) contrast(1.1);
     transform: scale(1.02);
     transition: transform 15s ease-out;
@@ -64,7 +61,6 @@ header:hover .hero-image {
     transform: scale(1.1);
 }
 
-/* Play Market Fade Refinement */
 header::after {
     content: '';
     position: absolute;
@@ -76,7 +72,7 @@ header::after {
     z-index: 15;
 }
 
-/* 5. FIXED NEON BUTTON (NO GLITCH) */
+/* 5. FIXED NEON BUTTON */
 .btn-neon {
     position: relative;
     display: inline-flex;
@@ -84,7 +80,7 @@ header::after {
     justify-content: center;
     background: linear-gradient(135deg, var(--neon-yellow) 0%, var(--neon-orange) 100%);
     color: var(--navy-deep) !important;
-    overflow: hidden; /* MUHIM: Glitch'ni to'xtatadi */
+    overflow: hidden;
     transition: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
     z-index: 1;
     border: none;
@@ -96,7 +92,6 @@ header::after {
     box-shadow: 0 20px 40px rgba(250, 204, 21, 0.3);
 }
 
-/* Yupqa Glare Effect (Faqat ichkarida yuradi) */
 .btn-neon::before {
     content: "";
     position: absolute;
@@ -161,20 +156,75 @@ header::after {
     transform: translateY(-10px) scale(1.02);
 }
 
-/* 8. PRODUCT GRID ENHANCEMENT */
-#products-container .glass-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+/* ==================================================================
+   8. SHOWCASE VITRINA VA KATEGORIYALAR (YANGI LOGIKA)
+   ================================================================== */
+.showcase-grid {
+    display: grid;
+    grid-template-rows: repeat(2, 1fr); /* Qat'iy 2 qator */
+    grid-auto-flow: column; /* Yonma-yon tizish */
+    grid-auto-columns: 280px; /* Har bir kartochka kengligi */
+    gap: 1.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding-bottom: 1.5rem;
 }
 
-#products-container img {
-    border-radius: 2.5rem 2.5rem 0 0;
-    transition: transform 1s cubic-bezier(0.2, 1, 0.3, 1);
+/* Vitrina skrollbari */
+.showcase-grid::-webkit-scrollbar {
+    height: 8px;
+}
+.showcase-grid::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+.showcase-grid::-webkit-scrollbar-thumb {
+    background: linear-gradient(to right, var(--neon-yellow), var(--neon-orange));
+    border-radius: 10px;
 }
 
-#products-container .glass-card:hover img {
-    transform: scale(1.1);
+.showcase-grid > div {
+    scroll-snap-align: start;
+}
+
+/* Kategoriya tugmalari */
+.category-btn {
+    white-space: nowrap;
+    padding: 0.75rem 2rem;
+    border-radius: 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    scroll-snap-align: start;
+    backdrop-filter: blur(10px);
+}
+
+.category-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.category-btn.active {
+    background: var(--neon-orange);
+    color: var(--navy-deep);
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
+    transform: translateY(-2px);
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 /* 9. UTILITIES & ANIMATIONS */
@@ -187,11 +237,6 @@ main section {
     animation: fadeIn 1s ease-out forwards;
 }
 
-.text-glow {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 
-                 0 0 40px rgba(250, 204, 21, 0.2);
-}
-
 /* 10. RESPONSIVE DESIGN (BREAKPOINTS) */
 @media (max-width: 1024px) {
     .max-w-7xl { padding-left: 2rem; padding-right: 2rem; }
@@ -199,23 +244,12 @@ main section {
 
 @media (max-width: 768px) {
     header { height: 75vh; }
-    
-    .hero-image {
-        object-fit: cover; /* Mobilda rasm qisilib qolmasligi uchun cover */
-    }
-    
+    .hero-image { object-fit: cover; }
     .glass-card { border-radius: 2rem; padding: 2rem !important; }
-    
     .text-6xl { font-size: 4rem !important; }
     
-    .btn-neon {
-        width: 100%;
-        padding: 1.5rem !important;
-        border-radius: 1.5rem;
+    .showcase-grid {
+        grid-auto-columns: 240px; /* Mobilda biroz kichraytiramiz */
+        gap: 1rem;
     }
-    
-    footer { padding-top: 5rem; }
 }
-
-/* Final Polish */
-.selection\:bg-neon_yellow::selection { background-color: var(--neon-yellow); color: var(--navy); }
