@@ -84,7 +84,7 @@
         </section>
 
         <section class="max-w-7xl mx-auto px-6 mb-24">
-            <div id="ads-container" class="grid grid-cols-1 gap-8"></section>
+            <div id="ads-container" class="grid grid-cols-1 gap-8"></div>
         </section>
 
         <section class="max-w-7xl mx-auto px-6 mb-28 grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -123,8 +123,8 @@
             <div id="services-container" class="grid grid-cols-1 md:grid-cols-3 gap-10"></div>
         </section>
 
-        <section id="katalog" class="max-w-7xl mx-auto px-6 mb-40">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 text-right md:text-left">
+        <section id="katalog" class="max-w-7xl mx-auto px-6 mb-40 overflow-hidden relative">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6 text-right md:text-left">
                 <div class="space-y-2">
                     <div class="flex items-center space-x-3">
                         <div class="h-2 w-12 bg-neon_orange rounded-full"></div>
@@ -133,7 +133,16 @@
                     <h2 id="katalog-title" class="font-heading text-5xl md:text-6xl font-bold uppercase tracking-tighter">Қурилиш моллари</h2>
                 </div>
             </div>
-            <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10"></div>
+
+            <div id="category-filters" class="flex overflow-x-auto gap-4 mb-10 pb-4 hide-scrollbar scroll-smooth snap-x">
+                </div>
+
+            <div class="relative">
+                <div class="absolute top-0 right-0 w-16 h-full bg-gradient-to-l from-navy to-transparent z-10 pointer-events-none"></div>
+                
+                <div id="products-container" class="showcase-grid pb-6">
+                    </div>
+            </div>
         </section>
     </main>
 
