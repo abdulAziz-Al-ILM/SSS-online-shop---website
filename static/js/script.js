@@ -7,7 +7,7 @@ const translations = {
     uz: {
         subtitle: "Ҳар бир хонадон учун энг яхшиси!",
         btn_katalog: "Каталогга ўтиш",
-        services_title: "Бизнинг хизматлар",
+        services_title: "Тез кунда ишга тушамиз!",
         katalog_title: "Қурилиш моллари",
         locations_title: "Бизнинг манзиллар",
         about_title: "Фирма ҳақида",
@@ -22,7 +22,7 @@ const translations = {
     ru: {
         subtitle: "Лучшее для каждого дома!",
         btn_katalog: "Перейти в каталог",
-        services_title: "Наши услуги",
+        services_title: "Скоро запуск!",
         katalog_title: "Стройматериалы",
         locations_title: "Наши адреса",
         about_title: "О компании",
@@ -37,7 +37,7 @@ const translations = {
     kg: {
         subtitle: "Ар бир үй үчүн эң жакшысы!",
         btn_katalog: "Каталогко өтүү",
-        services_title: "Биздин кызматтар",
+        services_title: "Жакында ишке киришебиз!",
         katalog_title: "Курулуш материалдары",
         locations_title: "Биздин даректер",
         about_title: "Фирма жөнүндө",
