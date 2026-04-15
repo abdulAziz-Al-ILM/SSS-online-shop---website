@@ -31,12 +31,16 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 async def read_root(request: Request):
     """Asosiy sahifa: Firma ma'lumotlari va logotipni yuklaydi"""
     info = await get_combined_info()
-    return templates.TemplateResponse("index.html", {
-        "request": request, 
-        "info": info, 
-        "logo_id": info.get("logo_id")
-    })
-
+    # O'zgarish: Argumentlar nomini (request=, name=, context=) aniq ko'rsatamiz
+    return templates.TemplateResponse(
+        request=request, 
+        name="index.html", 
+        context={
+            "request": request,
+            "info": info, 
+            "logo_id": info.get("logo_id")
+        }
+    )
 # --- API MARSHRUTLAR ---
 
 @app.get("/api/products")
