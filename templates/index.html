@@ -126,7 +126,7 @@
             </div>
         </section>
 
-        <section class="max-w-7xl mx-auto px-6 mb-32">
+        <section class="max-w-7xl mx-auto px-6 mb-20">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                 <div class="space-y-2 text-center md:text-left w-full">
                     <div class="flex items-center justify-center md:justify-start space-x-3">
@@ -136,9 +136,20 @@
                     <h2 class="font-heading text-4xl md:text-5xl font-bold uppercase tracking-tighter lang-text" data-uz="Бизнинг хизматлар" data-ru="Наши услуги" data-kg="Биздин кызматтар">Бизнинг хизматлар</h2>
                 </div>
             </div>
-            
-            <div id="services-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div id="services-container" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+        </section>
+
+        <section class="max-w-7xl mx-auto px-6 mb-32">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                <div class="space-y-2 text-center md:text-left w-full">
+                    <div class="flex items-center justify-center md:justify-start space-x-3">
+                        <div class="h-2 w-12 bg-red-500 rounded-full"></div>
+                        <span class="text-red-400 font-bold uppercase tracking-[0.3em] text-xs">Locations</span>
+                    </div>
+                    <h2 class="font-heading text-4xl md:text-5xl font-bold uppercase tracking-tighter lang-text" data-uz="Бизнинг манзиллар" data-ru="Наши адреса" data-kg="Биздин даректер">Бизнинг манзиллар</h2>
                 </div>
+            </div>
+            <div id="locations-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </section>
 
         <section id="katalog" class="max-w-7xl mx-auto px-6 mb-40 overflow-hidden relative">
@@ -155,13 +166,11 @@
                 </div>
             </div>
 
-            <div id="category-filters" class="flex overflow-x-auto gap-4 mb-10 pb-4 hide-scrollbar scroll-smooth snap-x">
-            </div>
+            <div id="category-filters" class="flex overflow-x-auto gap-4 mb-10 pb-4 hide-scrollbar scroll-smooth snap-x"></div>
 
             <div class="relative">
                 <div class="absolute top-0 right-0 w-16 h-full bg-gradient-to-l from-navy to-transparent z-10 pointer-events-none"></div>
-                <div id="products-container" class="showcase-grid pb-6">
-                    </div>
+                <div id="products-container" class="showcase-grid pb-6"></div>
             </div>
         </section>
     </main>
@@ -174,8 +183,7 @@
                 <button onclick="toggleCart()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
             </div>
             
-            <div id="cart-items" class="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
-                </div>
+            <div id="cart-items" class="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar"></div>
             
             <div class="mt-4 pt-4 border-t border-white/10 space-y-4">
                 <div class="flex justify-between items-center text-xl font-bold">
@@ -194,14 +202,11 @@
 
     <footer class="bg-[#0a101f] border-t border-white/5 pt-20 pb-12 relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
-        
         <div class="max-w-7xl mx-auto px-6">
             <div class="glass-card p-12 text-center border-neon_orange/20 relative group mb-20">
                 <div class="absolute inset-0 bg-neon_orange/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl"></div>
                 <h3 class="font-heading text-4xl text-neon_yellow font-bold mb-6 tracking-widest uppercase lang-text" data-uz="Фирма ҳақида" data-ru="О компании" data-kg="Компания жөнүндө">Фирма ҳақида</h3>
-                <p class="text-gray-300 max-w-4xl mx-auto text-lg leading-relaxed mb-8 font-light italic">
-                    "{{ info.about }}"
-                </p>
+                <p class="text-gray-300 max-w-4xl mx-auto text-lg leading-relaxed mb-8 font-light italic">"{{ info.about }}"</p>
                 <a href="tel:{{ info.phone | replace(' ', '') }}" class="inline-flex items-center bg-navy/60 px-8 py-4 rounded-full border border-white/10 shadow-xl backdrop-blur-md hover:border-neon_yellow transition-colors group-hover:scale-105">
                     <i class="fa-solid fa-phone-volume text-3xl text-neon_yellow mr-4 animate-bounce"></i>
                     <p class="text-3xl font-mono font-bold text-white tracking-tighter">{{ info.phone }}</p>
