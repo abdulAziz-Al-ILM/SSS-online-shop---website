@@ -24,14 +24,14 @@ os.makedirs("templates", exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Telegram bot tokeni (Rasmlarni tortish uchun zarur)
+# Muhim o'zgaruvchilar (Railway Variables dan olinadi)
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+BILLZ_API_KEY = os.getenv("BILLZ_API_KEY")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     """Asosiy sahifa: Firma ma'lumotlari va logotipni yuklaydi"""
     info = await get_combined_info()
-    # O'zgarish: Argumentlar nomini (request=, name=, context=) aniq ko'rsatamiz
     return templates.TemplateResponse(
         request=request, 
         name="index.html", 
@@ -41,11 +41,29 @@ async def read_root(request: Request):
             "logo_id": info.get("logo_id")
         }
     )
+
 # --- API MARSHRUTLAR ---
 
 @app.get("/api/products")
 async def api_get_products():
-    """Mahsulotlar ro'yxatini qaytaradi"""
+    """Mahsulotlar ro'yxatini Billz API orqali yoki zaxira sifatida o'z bazamizdan qaytaradi"""
+    # Agar Billz kaliti tizimda bo'lsa, Billz dan tortamiz
+    if BILLZ_API_KEY:
+        try:
+            async with httpx.AsyncClient() as client:
+                url = "https://api.billz.uz/v1/products" # Billz API manzili (dokumentatsiyasiga qarab o'zgartirishing mumkin)
+                headers = {
+                    "Authorization": f"Bearer {BILLZ_API_KEY}",
+                    "Content-Type": "application/json"
+                }
+                response = await client.get(url, headers=headers)
+                if response.status_code == 200:
+                    return {"status": "success", "data": response.json()}
+        except Exception as e:
+            print(f"Billz API ulanishida xatolik yuz berdi: {e}")
+            # Xatolik bo'lsa sayt qulamaydi, pastdagi zaxira ishga tushadi
+
+    # ZAXIRA: Agar Billz kaliti kiritilmagan bo'lsa yoki Billz ishlamay qolsa, o'zimizning MongoDB dan qaytaramiz
     products = await get_all_active_products()
     return {"status": "success", "data": products}
 
@@ -74,14 +92,12 @@ async def get_telegram_image(file_id: str):
         return {"error": "ID noto'g'ri"}
     try:
         async with httpx.AsyncClient() as client:
-            # Telegram API orqali fayl yo'lini topish
             res = await client.get(f"https://api.telegram.org/bot{BOT_TOKEN}/getFile?file_id={file_id}")
             data = res.json()
             if not data.get("ok"): 
                 return {"error": "Telegram serveri bilan aloqa o'rnatilmadi"}
             
             file_path = data["result"]["file_path"]
-            # Faylni Telegram serveridan tortib olish va saytga uzatish
             img_res = await client.get(f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file_path}")
             return StreamingResponse(img_res.iter_bytes(), media_type="image/jpeg")
     except Exception as e:
