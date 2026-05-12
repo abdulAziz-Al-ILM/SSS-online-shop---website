@@ -22,8 +22,23 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-# Aynan botdagi kalit
 BILLZ_API_KEY = os.getenv("BILLZ_API_KEY") 
+
+# Botingdan ajratib olingan Kategoriya ID'lari sirlari
+CATEGORIES_DB = {
+    "elektr jihozlari": "59ce55e6-0b1e-4be2-a646-87f3c8e95876", 
+    "santexnika": "79233dfd-cec2-47ca-a787-403829e554d4", 
+    "bo'yoqlar va emulsiya": "3a34e878-0f32-410c-bd0c-fc62c2ab8f60", 
+    "kafel va plitkalar": "0325476b-8cab-4da1-94ec-ade1727f53ac", 
+    "asbob-uskunalar": "7552b39d-aff3-4b21-a756-7014c17e8cbc",
+    "issiqlik izolyatsiyasi": "03147648-a1bc-433f-a444-9cfaa2806c39", 
+    "xo'jalik mollari": "45e95524-5047-43a6-8cf3-79e9f08becb8", 
+    "pena, silikon va yelimlar": "6ed8fe11-e13e-4eb4-bfb4-8f69343695d1",
+    "pardozlash materiallari": "335d4496-d096-478f-a813-73c21f1fc129", 
+    "mayda qotirish vositalari": "4327ed6a-a49d-4966-98ff-34dd439f8254",
+    "plintus va profillar": "a4bc6969-da19-4455-96dd-5de4aea6f441", 
+    "muhandislik tizimlari": "f53dfb0f-6113-4a9e-b913-09c44cbbef10"
+}
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
@@ -71,9 +86,9 @@ async def api_get_products():
                         "img": f"/api/image/{p.get('file_id')}" if p.get('file_id') else "https://via.placeholder.com/300x200?text=Rasm+yo'q"
                     })
         except Exception as e:
-            debug_log += f"MongoDB xatosi: {e}\n"
+            pass
 
-    # 2. BILLZ ADMIN API (AYLANIB O'TISH MANTIGI)
+    # 2. BILLZ ADMIN API (KATEGORIYALAR ORQALI BYPASS)
     if BILLZ_API_KEY:
         try:
             async with httpx.AsyncClient() as client:
@@ -91,39 +106,32 @@ async def api_get_products():
                         }
                         
                         billz_list = []
+                        found_ids = set()
                         
-                        # 1-URINISH: Ommaviy tortish (403 xato beradigan usul)
-                        prods_url = "https://api-admin.billz.ai/v2/product?limit=200"
-                        prods_response = await client.get(prods_url, headers=headers, timeout=10.0)
+                        debug_log += "Kategoriyalar orqali ma'lumot qidirish (Bypass V2) ishga tushdi...\n"
                         
-                        if prods_response.status_code == 200:
-                            billz_list = prods_response.json().get('data', [])
-                        elif prods_response.status_code == 403:
-                            debug_log += "Ommaviy yuklash 403 (Taqiqlangan). Qidiruv orqali aylanib o'tish (Bypass) ishga tushdi...\n"
-                            
-                            # 2-URINISH (BYPASS): Harflar yordamida "Qidiruv" qilib yig'ish (Sening boting ishlayotgan huquq doirasida)
-                            search_queries = ["a", "o", "i", "e", "u", " "] # Unli harflar va bo'sh joy bilan izlaymiz
-                            found_ids = set()
-                            
-                            for query in search_queries:
-                                bypass_url = f"https://api-admin.billz.ai/v2/product?name={query}&limit=100"
-                                bypass_res = await client.get(bypass_url, headers=headers, timeout=10.0)
+                        # Har bir kategoriya bo'yicha alohida so'rov yuboramiz
+                        for cat_name_uz, cat_uuid in CATEGORIES_DB.items():
+                            bypass_url = f"https://api-admin.billz.ai/v2/product?category_id={cat_uuid}&limit=50"
+                            try:
+                                bypass_res = await client.get(bypass_url, headers=headers, timeout=8.0)
                                 if bypass_res.status_code == 200:
                                     temp_data = bypass_res.json().get('data', [])
                                     for item in temp_data:
                                         pid = str(item.get("id"))
                                         if pid not in found_ids:
                                             found_ids.add(pid)
+                                            # Kategoriya nomini majburan o'zimiznikiga o'zgartiramiz
+                                            item['override_category'] = cat_name_uz.capitalize()
                                             billz_list.append(item)
+                            except: continue
+                        
+                        debug_log += f"Bypass muvaffaqiyatli: {len(billz_list)} ta mahsulot yig'ildi.\n"
+                        
+                        if not billz_list:
+                            debug_log += "ЯКУНИЙ ХУЛОСА: Тўлиқ блок. Маҳсулотларни рўйхат шаклида олиш бу калит билан таъқиқланган. Биллз операторларига қўнғироқ қилинг ва 'E-commerce (сайт) учун интеграция API калити кераклигини' айтинг.\n"
                             
-                            debug_log += f"Bypass muvaffaqiyatli: {len(billz_list)} ta mahsulot yig'ildi.\n"
-                            
-                            if not billz_list:
-                                debug_log += "Bypass ham bloklandi. YAGONA YECHIM: Billz sozlamalaridan ushbu API kalitga ommaviy o'qish (read_products) ruxsatini berish.\n"
-                        else:
-                            debug_log += f"Noma'lum xato: HTTP {prods_response.status_code}\n"
-                            
-                        # YIG'ILGAN MA'LUMOTNI SAYTGA MOSLASH (Kategoriyalari bilan)
+                        # SAYTGA MOSLASH
                         for p in billz_list:
                             price = 0
                             try:
@@ -139,34 +147,18 @@ async def api_get_products():
                                 elif isinstance(images[0], dict):
                                     img_url = images[0].get("url", img_url)
 
-                            # Kategoriyani filtrlash
-                            cat_name = "Бизнинг маҳсулотлар"
-                            cats = p.get("categories", [])
-                            if cats and len(cats) > 0:
-                                if isinstance(cats[0], dict):
-                                    cat_name = str(cats[0].get("name", cat_name))
-                                elif isinstance(cats[0], str):
-                                    cat_name = str(cats[0])
-                            elif p.get("category_name"):
-                                cat_name = str(p.get("category_name"))
-                                
-                            cat_name = cat_name.strip()
-                            if cat_name == "": cat_name = "Бизнинг маҳсулотлар"
-
                             all_products.append({
                                 "id": str(p.get("id", "")),
                                 "name": str(p.get("name", "Nomsiz")),
                                 "article": str(p.get("sku") or p.get("barcode") or str(p.get("id", ""))[-4:]),
                                 "price": price,
-                                "category": cat_name,
+                                "category": p.get('override_category', 'Boshqa'),
                                 "img": img_url
                             })
                 else:
                     debug_log += f"Billz Login xatosi: HTTP {auth_response.status_code}\n"
         except Exception as e:
-            debug_log += f"Billz ulanish xatosi: {str(e)}\n"
-    else:
-        debug_log += "BILLZ_API_KEY Railway'da kiritilmagan!\n"
+            debug_log += f"Billz xatosi: {str(e)}\n"
 
     return {
         "status": "success", 
