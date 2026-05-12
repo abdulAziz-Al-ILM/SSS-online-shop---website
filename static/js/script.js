@@ -31,7 +31,7 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// --- MAHSULOTLARNI TORTISH (Backend o'zi tozalab yuboradi) ---
+// --- MAHSULOTLAR ---
 async function fetchProducts() {
     try {
         const response = await fetch('/api/products'); 
@@ -43,8 +43,7 @@ async function fetchProducts() {
         if(products.length === 0) {
             document.getElementById('products-container').innerHTML = `
                 <div class="col-span-full w-full text-center py-10 glass-card">
-                    <p class='text-neon_yellow text-xl font-bold mb-2'>Ҳозирча маҳсулотлар қўшилмаган</p>
-                    <p class='text-gray-400 text-sm'>Бот орқали ёки Billz тизимига маҳсулот қўшинг.</p>
+                    <p class='text-neon_yellow text-xl font-bold mb-2'>Ҳозирча маҳсулотлар мавжуд эмас</p>
                 </div>`;
             return;
         }
@@ -53,11 +52,11 @@ async function fetchProducts() {
         renderProducts();
     } catch (error) {
         console.error("Xatolik:", error);
-        document.getElementById('products-container').innerHTML = `<p class='text-red-400 text-center w-full font-bold py-10'>Сервердан маълумот олишда узилиш бўлди. Базани текширинг.</p>`;
+        document.getElementById('products-container').innerHTML = `<p class='text-red-400 text-center w-full font-bold py-10'>Сервердан маълумот олишда узилиш бўлди.</p>`;
     }
 }
 
-// --- XIZMATLARNI TORTISH ---
+// --- XIZMATLAR ---
 async function fetchServices() {
     try {
         const response = await fetch('/api/services');
@@ -84,6 +83,42 @@ function renderServices(services) {
     `).join('');
 }
 
+// --- LOKATSIYALAR ---
+async function fetchLocations() {
+    try {
+        const response = await fetch('/api/locations');
+        if (!response.ok) return;
+        const resData = await response.json();
+        renderLocations(resData.data || []);
+    } catch (error) {
+        console.error("Lokatsiya yuklash xatosi:", error);
+    }
+}
+
+function renderLocations(locations) {
+    const container = document.getElementById('locations-container');
+    if (!locations || locations.length === 0) {
+        container.innerHTML = `<p class="text-gray-500 italic col-span-full text-center py-4">Ҳозирча манзиллар қўшилмаган</p>`;
+        return;
+    }
+    
+    container.innerHTML = locations.map(loc => `
+        <div class="glass-card p-6 border-l-4 border-red-500 hover:bg-white/5 transition-all flex flex-col justify-between">
+            <div class="mb-6">
+                <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-location-dot text-red-500"></i> ${loc.name}
+                </h3>
+                <p class="text-gray-400 text-sm">${loc.address || ''}</p>
+            </div>
+            ${loc.lat && loc.lon ? `
+            <a href="https://yandex.com/maps/?pt=${loc.lon},${loc.lat}&z=16&l=map" target="_blank" class="w-full bg-red-500/20 hover:bg-red-500/40 text-red-400 text-center py-3 rounded-lg text-sm font-bold transition-colors inline-block">
+                Харитада кўриш <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+            </a>` : ''}
+        </div>
+    `).join('');
+}
+
+// --- LOGIKA VA UI ---
 let activeCategory = 'All';
 
 function renderCategories() {
@@ -124,7 +159,6 @@ function renderProducts(searchQuery = '') {
     }
 
     filtered.forEach(p => {
-        // Artikul uzun bo'lsa oxirgi 4 ta harf/raqamni qirqamiz
         const shortArt = String(p.article).slice(-4).toUpperCase();
         const card = document.createElement('div');
         card.className = 'product-card glass-card p-4 flex flex-col justify-between h-full';
@@ -142,11 +176,10 @@ function renderProducts(searchQuery = '') {
             </div>
         `;
         container.appendChild(card);
-        observer.observe(card); // 3D effekt
+        observer.observe(card);
     });
 }
 
-// Savatcha Logikasi
 function addToCart(id, article, name, price) {
     let msg = currentLang === 'uz' ? "Нечта қўшмоқчисиз?" : currentLang === 'ru' ? "Сколько добавить?" : "Канча кошосуз?";
     let qtyStr = prompt(msg, "1");
@@ -252,6 +285,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 window.onload = () => {
     fetchProducts();
     fetchServices();
+    fetchLocations(); // Lokatsiyalarni ham yuklaymiz
     updateCartUI();
     changeLang('uz');
 };
