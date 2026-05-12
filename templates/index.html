@@ -2,91 +2,207 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSS Online Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SSS Online Shop | Сапаттуу курулуш материалдары</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="stylesheet" href="/static/css/style.css">
+    
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#D4AF37">
+    <meta name="theme-color" content="#0f172a">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#0f172a',
+                        navy_light: '#1e293b',
+                        neon_yellow: '#facc15',
+                        neon_orange: '#f97316'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <header>
-        <div class="logo">
-            <svg width="40" height="40" viewBox="0 0 100 100">
-                <rect width="100" height="100" rx="20" fill="#111"/>
-                <text x="50%" y="65%" font-family="Arial, sans-serif" font-weight="bold" font-size="60" fill="#D4AF37" text-anchor="middle">S</text>
-            </svg>
+<body class="bg-navy text-white min-h-screen flex flex-col font-sans selection:bg-neon_yellow selection:text-navy overflow-x-hidden">
+
+    <nav class="fixed top-6 right-6 flex space-x-2 z-[100] items-center">
+        <button id="install-pwa-btn" style="display: none;" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all text-neon_orange lang-text" data-uz="📲 O'rnatish" data-ru="📲 Установить" data-kg="📲 Орнотуу">📲 О'rnatish</button>
+        
+        <button onclick="toggleCart()" class="glass-btn px-4 py-2 text-sm font-bold rounded-xl border border-neon_yellow/50 text-neon_yellow hover:bg-neon_yellow hover:text-navy transition-all shadow-[0_0_15px_rgba(250,204,21,0.2)]">
+            <i class="fa-solid fa-cart-shopping"></i> <span id="cart-count">0</span>
+        </button>
+
+        <button onclick="changeLang('uz')" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all">УЗ</button>
+        <button onclick="changeLang('ru')" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all">РУ</button>
+        <button onclick="changeLang('kg')" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all">КГ</button>
+    </nav>
+
+    <header class="relative w-full h-[85vh] md:h-[90vh] overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            {% if info.logo_id %}
+            <img src="/api/image/{{ info.logo_id }}" class="hero-image TINY w-full h-full object-cover md:object-contain brightness-[0.85]" alt="SSS Hero Banner">
+            {% else %}
+            <div class="w-full h-full bg-navy_light flex items-center justify-center">
+                <p class="text-neon_yellow text-9xl font-black font-heading tracking-tighter opacity-20">SSS</p>
+            </div>
+            {% endif %}
         </div>
-        <div class="header-actions">
-            <select id="lang-select" onchange="changeLang()">
-                <option value="uz">UZ</option>
-                <option value="ru">RU</option>
-                <option value="kg">KG</option>
-            </select>
-            <button id="cart-btn" onclick="toggleCart()">🛒 <span id="cart-count">0</span></button>
-            <button id="install-pwa-btn" style="display: none;" class="lang-text" data-uz="O'rnatish" data-ru="Установить" data-kg="Орнотуу">O'rnatish</button>
+        <div class="absolute inset-0 bg-gradient-to-t from-navy via-navy/40 to-transparent z-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-navy/20 via-transparent to-transparent z-10"></div>
+
+        <div class="relative z-20 h-full max-w-7xl mx-auto px-6 flex flex-col justify-end pb-20 md:pb-32 w-full">
+            <div class="space-y-4 max-w-2xl">
+                <div class="inline-block px-4 py-1 rounded-full bg-neon_orange/20 border border-neon_orange/30 text-neon_orange text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] mb-2 animate-pulse">
+                    Premium Quality
+                </div>
+                <h1 class="text-6xl md:text-9xl font-heading font-black tracking-tighter text-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
+                    SSS <span class="text-neon_yellow italic font-light">Online</span>
+                </h1>
+                <p id="hero-subtitle" class="text-gray-200 font-medium text-sm md:text-lg pl-2 border-l-4 border-neon_yellow ml-1 max-w-lg drop-shadow-md lang-text" data-uz="Сифатли қурилиш материаллари доим хизматингизда." data-ru="Качественные строительные материалы всегда к вашим услугам." data-kg="Сапаттуу курулуш материалдары дайыма кызматыңызда.">
+                    Сапаттуу курулуш материалдары дайыма кызматыңызда.
+                </p>
+            </div>
         </div>
     </header>
 
-    <main>
-        <section class="services-section">
-            <h2 class="lang-text" data-uz="Бизнинг Хизматлар" data-ru="Наши услуги" data-kg="Биздин кызматтар">Бизнинг Хизматлар</h2>
-            <div class="buttons-grid">
-                <div class="service-item">
-                    <a href="https://t.me/SSS_shop_bot" class="btn telegram">Telegram Bot</a>
-                    <p class="lang-text desc" data-uz="Онлайн буюртма бериш учун хизмат қилади." data-ru="Служит для оформления онлайн-заказа." data-kg="Онлайн буйрутма берүү үчүн кызмат кылат.">Онлайн буюртма бериш учун хизмат қилади.</p>
-                </div>
-                <div class="service-item">
-                    <a href="https://t.me/SSS_shop_channel" class="btn channel">Telegram Kanal</a>
-                    <p class="lang-text desc" data-uz="Янгиликлар, эълонлар ва акциялар ҳақида билиб боринг." data-ru="Узнавайте о новостях, объявлениях и акциях." data-kg="Жаңылыктар, кулактандыруулар жана акциялар жөнүндө билип туруңуз.">Янгиликлар, эълонлар ва акциялар ҳақида билиб боринг.</p>
-                </div>
-                <div class="service-item">
-                    <a href="https://wa.me/998901234567" class="btn whatsapp">WhatsApp</a>
-                    <p class="lang-text desc" data-uz="Қўнғироқ қилиш орқали тўғридан-тўғри буюртма бериш." data-ru="Оформление заказа напрямую по телефону." data-kg="Чалуу аркылуу түз буйрутма берүү.">Қўнғироқ қилиш орқали тўғридан-тўғри буюртма бериш.</p>
-                </div>
-                <div class="service-item">
-                    <a href="https://instagram.com/sss_shop" class="btn instagram">Instagram</a>
-                    <p class="lang-text desc" data-uz="Қизиқарли видеоларимиз ҳамда эълонларимизни кузатиб боринг." data-ru="Следите за нашими интересными видео и объявлениями." data-kg="Биздин кызыктуу видеолорубузду жана кулактандырууларыбызды байкап туруңуз.">Қизиқарли видеоларимиз ҳамда эълонларимизни кузатиб боринг.</p>
+    <main class="relative z-30 -mt-16">
+        <section class="text-center px-6 mb-24">
+            <div class="max-w-2xl mx-auto glass-card p-12 space-y-8 border-t-2 border-white/10 shadow-[0_30px_60px_-12px_rgba(0,0,0,0.5)]">
+                <p id="site-subtitle" class="text-2xl md:text-3xl text-gray-300 font-heading italic font-light tracking-wide lang-text" data-uz="Ҳар бир хонадон учун энг яхшиси!" data-ru="Лучшее для каждого дома!" data-kg="Ар бир үй үчүн эң жакшысы!">
+                    Ҳар бир хонадон учун энг яхшиси!
+                </p>
+                <div class="flex justify-center">
+                    <a href="#katalog" class="btn-neon px-16 py-6 rounded-[2rem] text-xl font-bold tracking-[0.2em] uppercase shadow-[0_0_40px_rgba(250,204,21,0.2)] lang-text" data-uz="Каталогга ўтиш" data-ru="Перейти в каталог" data-kg="Каталогго өтүү">
+                        Каталогга ўтиш
+                    </a>
                 </div>
             </div>
         </section>
 
-        <section class="products-section">
-            <div class="search-category-bar">
-                <input type="text" id="search-input" placeholder="Mahsulot qidirish..." oninput="filterProducts()">
-                <div id="category-tabs" class="category-tabs">
-                    </div>
+        <section class="max-w-7xl mx-auto px-6 mb-24">
+            <div class="space-y-2 mb-10 text-center md:text-left">
+                <div class="flex items-center justify-center md:justify-start space-x-3">
+                    <div class="h-2 w-12 bg-neon_yellow rounded-full"></div>
+                    <span class="text-neon_yellow font-bold uppercase tracking-[0.3em] text-xs">Network</span>
+                </div>
+                <h2 class="font-heading text-4xl md:text-5xl font-bold uppercase tracking-tighter lang-text" data-uz="Бизнинг хизматлар" data-ru="Наши услуги" data-kg="Биздин кызматтар">Бизнинг хизматлар</h2>
             </div>
 
-            <div class="carousel-container" id="product-carousel">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <a href="{{ info.telegram_bot }}" target="_blank" class="social-card group overflow-hidden relative text-center">
+                    <div class="absolute inset-0 bg-blue-500/5 group-hover:bg-blue-500/10 transition-colors"></div>
+                    <i class="fa-brands fa-telegram text-5xl mb-3 text-blue-400 group-hover:scale-110 transition duration-500 relative z-10"></i>
+                    <p class="font-heading font-bold text-xl relative z-10 tracking-widest text-white">Ботга ўтиш</p>
+                    <p class="text-xs text-gray-400 mt-2 relative z-10 px-2 lang-text" data-uz="Онлайн буюртма бериш учун хизмат қилади." data-ru="Служит для оформления онлайн-заказа." data-kg="Онлайн заказ кылуу үчүн кызмат кылат.">Онлайн буюртма бериш учун хизмат қилади.</p>
+                </a>
+                <a href="{{ info.telegram_channel }}" target="_blank" class="social-card group overflow-hidden relative text-center">
+                    <div class="absolute inset-0 bg-blue-400/5 group-hover:bg-blue-400/10 transition-colors"></div>
+                    <i class="fa-solid fa-bullhorn text-5xl mb-3 text-blue-300 group-hover:scale-110 transition duration-500 relative z-10"></i>
+                    <p class="font-heading font-bold text-xl relative z-10 tracking-widest text-white">Каналимиз</p>
+                    <p class="text-xs text-gray-400 mt-2 relative z-10 px-2 lang-text" data-uz="Янгиликлар, эълонлар ва акциялар ҳақида билиб боринг." data-ru="Узнавайте о новостях, объявлениях и акциях." data-kg="Жаңылыктар, жарыялар жана акциялар жөнүндө билип туруңуз.">Янгиликлар, эълонлар ва акциялар ҳақида билиб боринг.</p>
+                </a>
+                <a href="{{ info.whatsapp }}" target="_blank" class="social-card group overflow-hidden relative text-center">
+                    <div class="absolute inset-0 bg-green-500/5 group-hover:bg-green-500/10 transition-colors"></div>
+                    <i class="fa-brands fa-whatsapp text-5xl mb-3 text-green-400 group-hover:scale-110 transition duration-500 relative z-10"></i>
+                    <p class="font-heading font-bold text-xl relative z-10 tracking-widest text-white">WhatsApp</p>
+                    <p class="text-xs text-gray-400 mt-2 relative z-10 px-2 lang-text" data-uz="Қўнғироқ қилиш орқали тўғридан-тўғри буюртма бериш." data-ru="Оформление заказа напрямую по телефону." data-kg="Телефон аркылуу түз заказ берүү үчүн.">Қўнғироқ қилиш орқали тўғридан-тўғри буюртма бериш.</p>
+                </a>
+                <a href="{{ info.instagram }}" target="_blank" class="social-card group overflow-hidden relative text-center">
+                    <div class="absolute inset-0 bg-pink-500/5 group-hover:bg-pink-500/10 transition-colors"></div>
+                    <i class="fa-brands fa-instagram text-5xl mb-3 text-pink-500 group-hover:scale-110 transition duration-500 relative z-10"></i>
+                    <p class="font-heading font-bold text-xl relative z-10 tracking-widest text-white">Instagram</p>
+                    <p class="text-xs text-gray-400 mt-2 relative z-10 px-2 lang-text" data-uz="Қизиқарли видеоларимиз ҳамда эълонларимизни кузатиб боринг." data-ru="Следите за нашими интересными видео и объявлениями." data-kg="Кызыктуу видеолорубузду жана жарыяларыбызды байкап туруңуз.">Қизиқарли видеоларимиз ҳамда эълонларимизни кузатиб боринг.</p>
+                </a>
+            </div>
+        </section>
+
+        <section id="katalog" class="max-w-7xl mx-auto px-6 mb-40 overflow-hidden relative">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
+                <div class="space-y-2 text-center md:text-left">
+                    <div class="flex items-center justify-center md:justify-start space-x-3">
+                        <div class="h-2 w-12 bg-neon_orange rounded-full"></div>
+                        <span class="text-neon_orange font-bold uppercase tracking-[0.3em] text-xs">Collection</span>
+                    </div>
+                    <h2 class="font-heading text-5xl md:text-6xl font-bold uppercase tracking-tighter lang-text" data-uz="Қурилиш моллари" data-ru="Стройматериалы" data-kg="Курулуш материалдары">Қурилиш моллари</h2>
                 </div>
+                <div class="w-full md:w-1/3">
+                    <input type="text" id="search-input" oninput="filterProducts()" placeholder="Қидириш..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-neon_yellow transition-colors lang-text" data-uz="Маҳсулот қидириш..." data-ru="Поиск товаров..." data-kg="Товар издөө...">
+                </div>
+            </div>
+
+            <div id="category-filters" class="flex overflow-x-auto gap-4 mb-10 pb-4 hide-scrollbar scroll-smooth snap-x">
+            </div>
+
+            <div class="relative">
+                <div class="absolute top-0 right-0 w-16 h-full bg-gradient-to-l from-navy to-transparent z-10 pointer-events-none"></div>
+                <div id="products-container" class="showcase-grid pb-6">
+                    </div>
+            </div>
         </section>
     </main>
 
-    <div id="cart-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="toggleCart()">&times;</span>
-            <h2 class="lang-text" data-uz="Сават" data-ru="Корзина" data-kg="Себет">Сават</h2>
-            <div id="cart-items"></div>
-            <div class="cart-footer">
-                <h3><span class="lang-text" data-uz="Жами:" data-ru="Итого:" data-kg="Баардыгы:">Жами:</span> <span id="cart-total">0</span> UZS</h3>
-                <button onclick="clearCart()" class="clear-btn lang-text" data-uz="Тозалаш" data-ru="Очистить" data-kg="Тазалоо">Тозалаш</button>
-                <button onclick="checkoutWhatsApp()" class="checkout-btn lang-text" data-uz="WhatsApp орқали буюртма" data-ru="Заказ через WhatsApp" data-kg="WhatsApp аркылуу буйрутма">WhatsApp орқали буюртма</button>
+    <div id="cart-modal" class="fixed inset-0 z-[200] hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleCart()"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md glass-card p-6 border border-white/10 shadow-2xl flex flex-col max-h-[80vh]">
+            <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-4">
+                <h2 class="text-2xl font-heading font-bold text-neon_yellow uppercase tracking-wider lang-text" data-uz="Сават" data-ru="Корзина" data-kg="Себет">Сават</h2>
+                <button onclick="toggleCart()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            
+            <div id="cart-items" class="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
+                </div>
+            
+            <div class="mt-4 pt-4 border-t border-white/10 space-y-4">
+                <div class="flex justify-between items-center text-xl font-bold">
+                    <span class="lang-text" data-uz="Жами:" data-ru="Итого:" data-kg="Баардыгы:">Жами:</span>
+                    <span id="cart-total" class="text-neon_yellow">0 UZS</span>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="clearCart()" class="flex-1 bg-white/10 hover:bg-red-500/80 text-white py-3 rounded-xl font-bold transition-colors lang-text" data-uz="Тозалаш" data-ru="Очистить" data-kg="Тазалоо">Тозалаш</button>
+                    <button onclick="checkoutWhatsApp()" class="flex-[2] bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold transition-colors shadow-[0_0_15px_rgba(34,197,94,0.4)] flex justify-center items-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-xl"></i> <span class="lang-text" data-uz="Буюртма бериш" data-ru="Заказать" data-kg="Буйрутма берүү">Буюртма бериш</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <footer>
-        <a href="tel:+998901234567" class="footer-tel">+998 90 123 45 67</a>
-        <p class="lang-text rights" data-uz="Барча ҳуқуқлар ҳимояланган" data-ru="Все права защищены" data-kg="Бардык укуктар корголгон">Бардык укуктар корголгон</p>
-        <p class="powered">Powered by <strong>ILM Mizan</strong></p>
+    <footer class="bg-[#0a101f] border-t border-white/5 pt-20 pb-12 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="glass-card p-12 text-center border-neon_orange/20 relative group mb-20">
+                <div class="absolute inset-0 bg-neon_orange/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl"></div>
+                <h3 class="font-heading text-4xl text-neon_yellow font-bold mb-6 tracking-widest uppercase lang-text" data-uz="Фирма ҳақида" data-ru="О компании" data-kg="Компания жөнүндө">Фирма ҳақида</h3>
+                <p class="text-gray-300 max-w-4xl mx-auto text-lg leading-relaxed mb-8 font-light italic">
+                    "{{ info.about }}"
+                </p>
+                <a href="tel:{{ info.phone | replace(' ', '') }}" class="inline-flex items-center bg-navy/60 px-8 py-4 rounded-full border border-white/10 shadow-xl backdrop-blur-md hover:border-neon_yellow transition-colors group-hover:scale-105">
+                    <i class="fa-solid fa-phone-volume text-3xl text-neon_yellow mr-4 animate-bounce"></i>
+                    <p class="text-3xl font-mono font-bold text-white tracking-tighter">{{ info.phone }}</p>
+                </a>
+            </div>
+
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-sm">
+                <p class="font-medium tracking-wide">&copy; 2026 SSS Online Shop. <span class="lang-text" data-uz="Барча ҳуқуқлар ҳимояланган." data-ru="Все права защищены." data-kg="Бардык укуктар корголгон.">Бардык укуктар корголгон.</span></p>
+                <div class="flex items-center space-x-2">
+                    <span class="font-heading uppercase tracking-[0.3em] text-[10px]">Powered by</span>
+                    <span class="text-white font-bold tracking-widest text-xs">ILM Mizan</span>
+                </div>
+            </div>
+        </div>
     </footer>
 
     <script src="/static/js/script.js"></script>
-    <script>
-        // PWA Service Worker ro'yxatdan o'tkazish
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js');
-        }
-    </script>
 </body>
 </html>
