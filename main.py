@@ -48,8 +48,9 @@ async def read_root(request: Request):
 @app.get("/api/products")
 async def api_get_products():
     all_products = []
+    debug_log = "Бошланғич ҳолат."
     
-    # 1. BOT BAZASI (Xatoliklarni chetlab o'tuvchi mantiq bilan)
+    # 1. BOT BAZASI
     get_prods = getattr(db_module, "get_all_products", getattr(db_module, "get_all_active_products", None))
     if get_prods:
         try:
@@ -58,7 +59,7 @@ async def api_get_products():
                 for p in db_prods:
                     try:
                         price = int(float(str(p.get("price", 0))))
-                    except (ValueError, TypeError):
+                    except:
                         price = 0
                     
                     prod_id = str(p.get("_id", ""))
@@ -71,22 +72,31 @@ async def api_get_products():
                         "img": f"/api/image/{p.get('file_id')}" if p.get('file_id') else "https://via.placeholder.com/300x200?text=Rasm+yo'q"
                     })
         except Exception as e:
-            print(f"❌ MONGODB XATOSI: {e}")
+            debug_log += f"\nMongoDB Xatosi: {e}"
 
-    # 2. BILLZ API (Har bir mahsulotni alohida tahlil qilib, xatosini filtrlaydi)
+    # 2. BILLZ API (Xatoliklarni ushlab, debug_log'ga yozamiz)
     if BILLZ_API_KEY:
         try:
             async with httpx.AsyncClient() as client:
                 headers = {"Authorization": f"Bearer {BILLZ_API_KEY}", "Content-Type": "application/json"}
                 response = await client.get(BILLZ_API_URL, headers=headers, timeout=10.0)
+                
+                # Saytda ko'rsatish uchun Billz dan kelgan RAW datani saqlaymiz
+                debug_log = f"HTTP STATUS: {response.status_code}\n"
+                debug_log += f"RAW HEADERS: {response.headers}\n"
+                debug_log += f"RAW RESPONSE: {response.text[:1000]}" # 1000 ta harfini ko'ramiz
+                
                 if response.status_code == 200:
                     data = response.json()
                     billz_list = data if isinstance(data, list) else (data.get("products") or data.get("items") or data.get("data") or [])
                     
+                    if not billz_list:
+                        debug_log += "\nДИҚҚАТ: JSON ичида маҳсулотлар рўйхати (Array) топилмади!"
+                        
                     for p in billz_list:
                         try:
                             price = int(float(str(p.get("price", 0))))
-                        except (ValueError, TypeError):
+                        except:
                             price = 0
                             
                         all_products.append({
@@ -97,12 +107,17 @@ async def api_get_products():
                             "category": str(p.get("category_name") or p.get("category") or "Billz Catalog"),
                             "img": str(p.get("image_url") or "https://via.placeholder.com/300x200?text=Rasm+yo'q")
                         })
-                else:
-                    print(f"❌ BILLZ API XATOSI: HTTP {response.status_code} - {response.text}")
         except Exception as e:
-            print(f"❌ BILLZ ULANISH XATOSI: {e}")
+            debug_log += f"\nBILLZ ULANISH XATOSI: {str(e)}"
+    else:
+        debug_log = "BILLZ_API_KEY Railway'да киритилмаган ёки бўш!"
 
-    return {"status": "success", "data": all_products, "total": len(all_products)}
+    return {
+        "status": "success", 
+        "data": all_products, 
+        "total": len(all_products),
+        "debug_info": debug_log
+    }
 
 @app.get("/api/services")
 async def api_get_services():
@@ -111,20 +126,19 @@ async def api_get_services():
     if get_srv:
         try:
             services = await get_srv()
-        except Exception as e:
-            print(f"❌ XIZMATLAR XATOSI: {e}")
+        except:
+            pass
     return {"status": "success", "data": services}
 
 @app.get("/api/locations")
 async def api_get_locations():
-    """Manzillar/Filiallar uchun API"""
     get_loc = getattr(db_module, "get_all_locations", None)
     locations = []
     if get_loc:
         try:
             locations = await get_loc()
-        except Exception as e:
-            print(f"❌ LOKATSIYA XATOSI: {e}")
+        except:
+            pass
     return {"status": "success", "data": locations}
 
 @app.get("/api/image/{file_id}")
