@@ -6,32 +6,42 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
 
-# database_web.py faylidan barcha funksiyalarni chaqirib olamiz
-from database_web import (
-    get_all_active_products, get_combined_info, 
-    get_all_services, get_all_locations, get_active_ads,
-    create_web_order
-)
+# Baza faylini qanday nomlaganingni bilmaganimiz uchun ikkalasini ham sinab ko'ramiz
+try:
+    import database_web as db_module
+except ImportError:
+    import database as db_module
 
-app = FastAPI(title="SSS Online Shop API")
+app = FastAPI(title="SSS Online Shop API - ILM Mizan")
 
-# Loyiha uchun zarur papkalarni tekshirish va yaratish
 os.makedirs("static/css", exist_ok=True)
 os.makedirs("static/js", exist_ok=True)
 os.makedirs("templates", exist_ok=True)
 
-# Statik fayllar (CSS, JS) va HTML shablonlarni ulash
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Muhim o'zgaruvchilar (Railway Variables dan olinadi)
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 BILLZ_API_KEY = os.getenv("BILLZ_API_KEY")
+BILLZ_API_URL = os.getenv("BILLZ_API_URL", "https://api.billz.uz/v1/products")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    """Asosiy sahifa: Firma ma'lumotlari va logotipni yuklaydi"""
-    info = await get_combined_info()
+    # Asosiy ma'lumotlarni xavfsiz chaqirish
+    get_info = getattr(db_module, "get_combined_info", getattr(db_module, "get_shop_info", None))
+    info = await get_info() if get_info else {}
+    
+    # Agar bazada ma'lumot bo'lmasa, sayt qulamasligi uchun default qiymatlar
+    if not info:
+        info = {
+            "about": "Eng sifatli qurilish mollari ILM Mizan me'morligi ostida.",
+            "phone": "+998 90 123 45 67",
+            "telegram_bot": "https://t.me/sss_shop_bot",
+            "telegram_channel": "https://t.me/sss_shop",
+            "whatsapp": "https://wa.me/998901234567",
+            "instagram": "https://instagram.com/sss_shop"
+        }
+        
     return templates.TemplateResponse(
         request=request, 
         name="index.html", 
@@ -42,60 +52,80 @@ async def read_root(request: Request):
         }
     )
 
-# --- API MARSHRUTLAR ---
-
 @app.get("/api/products")
 async def api_get_products():
-    """Mahsulotlar ro'yxatini Billz API orqali yoki zaxira sifatida o'z bazamizdan qaytaradi"""
-    # Agar Billz kaliti tizimda bo'lsa, Billz dan tortamiz
+    """Bot bazasi va Billz API'dagi mahsulotlarni bittada yig'uvchi Beton Mantiq"""
+    all_products = []
+    
+    # 1. BOT BAZASIDAN OLISH (MongoDB)
+    get_prods = getattr(db_module, "get_all_products", getattr(db_module, "get_all_active_products", None))
+    if get_prods:
+        try:
+            db_prods = await get_prods()
+            if db_prods:
+                for p in db_prods:
+                    # Frontend uchun standartlashtiramiz
+                    prod_id = str(p.get("_id", ""))
+                    all_products.append({
+                        "id": prod_id,
+                        "name": p.get("name", "Nomsiz mahsulot"),
+                        "article": f"BOT-{prod_id[-4:]}", # Bot mahsulotlariga maxsus artikul
+                        "price": int(p.get("price", 0)),
+                        "category": p.get("category", "Бизнинг маҳсулотлар"),
+                        "img": f"/api/image/{p.get('file_id')}" if p.get('file_id') else "https://via.placeholder.com/300x200?text=Rasm+yo'q"
+                    })
+        except Exception as e:
+            print(f"❌ MONGODB XATOSI: {e}")
+
+    # 2. BILLZ API DAN OLISH
     if BILLZ_API_KEY:
         try:
             async with httpx.AsyncClient() as client:
-                url = "https://api.billz.uz/v1/products" # Billz API manzili (dokumentatsiyasiga qarab o'zgartirishing mumkin)
-                headers = {
-                    "Authorization": f"Bearer {BILLZ_API_KEY}",
-                    "Content-Type": "application/json"
-                }
-                response = await client.get(url, headers=headers)
+                headers = {"Authorization": f"Bearer {BILLZ_API_KEY}", "Content-Type": "application/json"}
+                response = await client.get(BILLZ_API_URL, headers=headers, timeout=8.0)
                 if response.status_code == 200:
-                    return {"status": "success", "data": response.json()}
+                    data = response.json()
+                    billz_list = data if isinstance(data, list) else (data.get("products") or data.get("items") or data.get("data") or [])
+                    
+                    for p in billz_list:
+                        all_products.append({
+                            "id": str(p.get("id", "")),
+                            "name": p.get("name", "Nomsiz"),
+                            "article": p.get("sku") or p.get("article") or str(p.get("id"))[-4:],
+                            "price": int(p.get("price", 0)),
+                            "category": p.get("category_name") or p.get("category") or "Billz Catalog",
+                            "img": p.get("image_url") or "https://via.placeholder.com/300x200?text=Rasm+yo'q"
+                        })
+                else:
+                    print(f"❌ BILLZ API XATOSI: Status {response.status_code}")
         except Exception as e:
-            print(f"Billz API ulanishida xatolik yuz berdi: {e}")
-            # Xatolik bo'lsa sayt qulamaydi, pastdagi zaxira ishga tushadi
+            print(f"❌ BILLZ ULANISH XATOSI: {e}")
 
-    # ZAXIRA: Agar Billz kaliti kiritilmagan bo'lsa yoki Billz ishlamay qolsa, o'zimizning MongoDB dan qaytaramiz
-    products = await get_all_active_products()
-    return {"status": "success", "data": products}
+    return {"status": "success", "data": all_products, "total": len(all_products)}
 
 @app.get("/api/services")
 async def api_get_services():
-    """Xizmatlar ro'yxatini qaytaradi"""
-    services = await get_all_services()
+    """Botdagi xizmatlarni xavfsiz chaqirish"""
+    get_srv = getattr(db_module, "get_all_services", None)
+    services = []
+    if get_srv:
+        try:
+            services = await get_srv()
+        except Exception as e:
+            print(f"❌ XIZMATLAR XATOSI: {e}")
     return {"status": "success", "data": services}
-
-@app.get("/api/locations")
-async def api_get_locations():
-    """Filiallar lokatsiyalarini qaytaradi"""
-    locations = await get_all_locations()
-    return {"status": "success", "data": locations}
-
-@app.get("/api/ads")
-async def api_get_ads():
-    """Aktiv reklamalar va bonuslarni qaytaradi"""
-    ads = await get_active_ads()
-    return {"status": "success", "data": ads}
 
 @app.get("/api/image/{file_id}")
 async def get_telegram_image(file_id: str):
-    """Telegram file_id orqali rasmlarni saytda ko'rsatish uchun proxy"""
+    """Telegramdan rasmni saytga o'girib berish"""
     if not file_id or file_id == "None":
-        return {"error": "ID noto'g'ri"}
+        return {"error": "Noto'g'ri ID"}
     try:
         async with httpx.AsyncClient() as client:
             res = await client.get(f"https://api.telegram.org/bot{BOT_TOKEN}/getFile?file_id={file_id}")
             data = res.json()
             if not data.get("ok"): 
-                return {"error": "Telegram serveri bilan aloqa o'rnatilmadi"}
+                return {"error": "Telegram serveri aloqa bermadi"}
             
             file_path = data["result"]["file_path"]
             img_res = await client.get(f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file_path}")
@@ -103,21 +133,6 @@ async def get_telegram_image(file_id: str):
     except Exception as e:
         return {"error": str(e)}
 
-@app.post("/api/order")
-async def api_create_order(order_data: dict):
-    """Saytdan yuborilgan buyurtmalarni qabul qilish va bazaga saqlash"""
-    product_id = order_data.get("product_id")
-    name = order_data.get("name")
-    phone = order_data.get("phone")
-    
-    success = await create_web_order(product_id, name, phone)
-    
-    if success:
-        return {"status": "success", "message": "Buyurtma bazaga muvaffaqiyatli yozildi"}
-    else:
-        return {"status": "error", "message": "Buyurtma saqlashda xatolik yuz berdi"}
-
 if __name__ == "__main__":
-    # Railway PORT ni o'zi taqdim etadi, aks holda 8000 ishlatiladi
     port = int(os.getenv("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
