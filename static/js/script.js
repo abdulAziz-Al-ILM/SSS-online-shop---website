@@ -19,7 +19,7 @@ function changeLang(lang) {
 // 3D Effekt Observer
 const observerOptions = {
     root: document.getElementById('products-container'),
-    rootMargin: '0px -35% 0px -35%', // Ekran markazini ushlash
+    rootMargin: '0px -35% 0px -35%',
     threshold: 0
 };
 
@@ -33,19 +33,26 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// Mahsulotlarni backenddan xavfsiz tortish
+// --- MAHSULOTLARNI TORTISH (XATOLARDAN HIMOYA BILAN) ---
 async function fetchProducts() {
     try {
         const response = await fetch('/api/products'); 
         if (!response.ok) throw new Error("Server xatosi");
 
         const resData = await response.json();
-        const data = resData.data; 
+        let data = resData.data; 
         
-        products = data.map(item => ({
+        // Agar API dan data obyekt ichida kelsa uni massivga(Array) aylantiramiz
+        let productList = Array.isArray(data) ? data : (data.products || data.items || data.data || []);
+
+        if(!Array.isArray(productList) || productList.length === 0) {
+            console.warn("API mahsulotlarni topmadi yoki format xato:", data);
+        }
+
+        products = productList.map(item => ({
             id: item.id || item._id,
-            name: item.name,
-            article: item.sku || item.article || "0000",
+            name: item.name || "Nomsiz mahsulot",
+            article: item.sku || item.article || item.id || "0000",
             price: item.price || 0,
             category: item.category_name || item.category || "Boshqa",
             img: item.image_url ? item.image_url : (item.file_id ? `/api/image/${item.file_id}` : "https://via.placeholder.com/200?text=Rasm+yo'q")
@@ -54,9 +61,36 @@ async function fetchProducts() {
         renderCategories();
         renderProducts();
     } catch (error) {
-        console.error("Xato:", error);
-        document.getElementById('products-container').innerHTML = "<p class='text-white text-center w-full'>Маҳсулотларни юклашда хатолик. Илтимос, янгиланг.</p>";
+        console.error("Mahsulotларни юклаш хатоси:", error);
+        document.getElementById('products-container').innerHTML = `<p class='text-red-400 text-center w-full'>Маҳсулотларни юклашда хатолик юз берди. Базани текширинг.</p>`;
     }
+}
+
+// --- XIZMATLARNI (BOTDAN QO'SHILADIGAN) TORTISH VA CHIZISH ---
+async function fetchServices() {
+    try {
+        const response = await fetch('/api/services');
+        if (!response.ok) return;
+        const resData = await response.json();
+        renderServices(resData.data || []);
+    } catch (error) {
+        console.error("Xizmatlarni yuklash xatosi:", error);
+    }
+}
+
+function renderServices(services) {
+    const container = document.getElementById('services-container');
+    if (!services || services.length === 0) {
+        container.innerHTML = `<p class="text-gray-500 italic col-span-full text-center">Ҳозирча хизматлар қўшилмаган</p>`;
+        return;
+    }
+    
+    container.innerHTML = services.map(s => `
+        <div class="glass-card p-8 border-t-2 border-neon_yellow/30 hover:border-neon_yellow transition-all group">
+            <h3 class="text-2xl font-bold text-white mb-4 group-hover:text-neon_yellow transition-colors">${s.name}</h3>
+            <p class="text-gray-400 text-sm leading-relaxed">${s.description || ''}</p>
+        </div>
+    `).join('');
 }
 
 let activeCategory = 'All';
@@ -93,14 +127,13 @@ function renderProducts(searchQuery = '') {
     });
 
     if(filtered.length === 0) {
-        container.innerHTML = `<p class="text-gray-400 p-4">${currentLang === 'uz' ? 'Topilmadi' : 'Не найдено'}</p>`;
+        container.innerHTML = `<p class="text-gray-400 p-4">${currentLang === 'uz' ? 'Топилмади' : 'Не найдено'}</p>`;
         return;
     }
 
     filtered.forEach(p => {
         const shortArt = String(p.article).slice(-4);
         const card = document.createElement('div');
-        // Tailwind classlari dizayninga moslangan
         card.className = 'product-card glass-card p-4 flex flex-col justify-between h-full';
         card.innerHTML = `
             <div>
@@ -135,7 +168,6 @@ function addToCart(id, article, name, price) {
     }
     saveCart();
     
-    // Qisqa animatsiya tugmada
     const btn = document.getElementById('cart-count').parentElement;
     btn.classList.add('scale-125');
     setTimeout(() => btn.classList.remove('scale-125'), 200);
@@ -204,7 +236,6 @@ function checkoutWhatsApp() {
     
     text += `\n💵 Жами сумма: ${total.toLocaleString()} UZS\nИлтимос, тайёрлаб қўйинг!`;
     
-    // Serverdan kelgan telefon raqami yoki statik (998901234567 o'rniga o'z raqamingni qo'y)
     window.open(`https://wa.me/998901234567?text=${encodeURIComponent(text)}`, '_blank');
     
     clearCart();
@@ -230,6 +261,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 window.onload = () => {
     fetchProducts();
+    fetchServices(); // Xizmatlar endi alohida yuklanadi
     updateCartUI();
-    changeLang('uz'); // Default til
+    changeLang('uz');
 };
