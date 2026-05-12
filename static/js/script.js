@@ -2,7 +2,6 @@ let currentLang = 'uz';
 let products = [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-// Tilni o'zgartirish
 function changeLang(lang) {
     if(lang) currentLang = lang;
     document.querySelectorAll('.lang-text').forEach(el => {
@@ -16,7 +15,6 @@ function changeLang(lang) {
     updateCartUI();
 }
 
-// 3D Effekt Observer
 const observerOptions = {
     root: document.getElementById('products-container'),
     rootMargin: '0px -35% 0px -35%',
@@ -33,40 +31,33 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// --- MAHSULOTLARNI TORTISH (XATOLARDAN HIMOYA BILAN) ---
+// --- MAHSULOTLARNI TORTISH (Backend o'zi tozalab yuboradi) ---
 async function fetchProducts() {
     try {
         const response = await fetch('/api/products'); 
         if (!response.ok) throw new Error("Server xatosi");
 
         const resData = await response.json();
-        let data = resData.data; 
+        products = resData.data || [];
         
-        // Agar API dan data obyekt ichida kelsa uni massivga(Array) aylantiramiz
-        let productList = Array.isArray(data) ? data : (data.products || data.items || data.data || []);
-
-        if(!Array.isArray(productList) || productList.length === 0) {
-            console.warn("API mahsulotlarni topmadi yoki format xato:", data);
+        if(products.length === 0) {
+            document.getElementById('products-container').innerHTML = `
+                <div class="col-span-full w-full text-center py-10 glass-card">
+                    <p class='text-neon_yellow text-xl font-bold mb-2'>Ҳозирча маҳсулотлар қўшилмаган</p>
+                    <p class='text-gray-400 text-sm'>Бот орқали ёки Billz тизимига маҳсулот қўшинг.</p>
+                </div>`;
+            return;
         }
 
-        products = productList.map(item => ({
-            id: item.id || item._id,
-            name: item.name || "Nomsiz mahsulot",
-            article: item.sku || item.article || item.id || "0000",
-            price: item.price || 0,
-            category: item.category_name || item.category || "Boshqa",
-            img: item.image_url ? item.image_url : (item.file_id ? `/api/image/${item.file_id}` : "https://via.placeholder.com/200?text=Rasm+yo'q")
-        }));
-        
         renderCategories();
         renderProducts();
     } catch (error) {
-        console.error("Mahsulotларни юклаш хатоси:", error);
-        document.getElementById('products-container').innerHTML = `<p class='text-red-400 text-center w-full'>Маҳсулотларни юклашда хатолик юз берди. Базани текширинг.</p>`;
+        console.error("Xatolik:", error);
+        document.getElementById('products-container').innerHTML = `<p class='text-red-400 text-center w-full font-bold py-10'>Сервердан маълумот олишда узилиш бўлди. Базани текширинг.</p>`;
     }
 }
 
-// --- XIZMATLARNI (BOTDAN QO'SHILADIGAN) TORTISH VA CHIZISH ---
+// --- XIZMATLARNI TORTISH ---
 async function fetchServices() {
     try {
         const response = await fetch('/api/services');
@@ -74,14 +65,14 @@ async function fetchServices() {
         const resData = await response.json();
         renderServices(resData.data || []);
     } catch (error) {
-        console.error("Xizmatlarni yuklash xatosi:", error);
+        console.error("Xizmat yuklash xatosi:", error);
     }
 }
 
 function renderServices(services) {
     const container = document.getElementById('services-container');
     if (!services || services.length === 0) {
-        container.innerHTML = `<p class="text-gray-500 italic col-span-full text-center">Ҳозирча хизматлар қўшилмаган</p>`;
+        container.innerHTML = `<p class="text-gray-500 italic col-span-full text-center py-4">Ҳозирча хизматлар қўшилмаган</p>`;
         return;
     }
     
@@ -118,6 +109,7 @@ function filterProducts() {
 
 function renderProducts(searchQuery = '') {
     const container = document.getElementById('products-container');
+    if (!container) return;
     container.innerHTML = '';
     
     const filtered = products.filter(p => {
@@ -126,30 +118,31 @@ function renderProducts(searchQuery = '') {
         return matchCat && matchSearch;
     });
 
-    if(filtered.length === 0) {
-        container.innerHTML = `<p class="text-gray-400 p-4">${currentLang === 'uz' ? 'Топилмади' : 'Не найдено'}</p>`;
+    if(filtered.length === 0 && products.length > 0) {
+        container.innerHTML = `<p class="text-gray-400 p-4 font-bold col-span-full">${currentLang === 'uz' ? 'Топилмади' : 'Не найдено'}</p>`;
         return;
     }
 
     filtered.forEach(p => {
-        const shortArt = String(p.article).slice(-4);
+        // Artikul uzun bo'lsa oxirgi 4 ta harf/raqamni qirqamiz
+        const shortArt = String(p.article).slice(-4).toUpperCase();
         const card = document.createElement('div');
         card.className = 'product-card glass-card p-4 flex flex-col justify-between h-full';
         card.innerHTML = `
             <div>
-                <img src="${p.img}" loading="lazy" alt="${p.name}" class="w-full h-36 object-cover rounded-xl mb-3 border border-white/5">
+                <img src="${p.img}" loading="lazy" alt="${p.name}" class="w-full h-36 object-cover rounded-xl mb-3 border border-white/5 bg-navy">
                 <h3 class="text-white font-bold text-lg leading-tight mb-1 truncate">${p.name}</h3>
-                <p class="text-gray-400 text-xs mb-2 font-mono">Art: ...${shortArt}</p>
+                <p class="text-gray-400 text-xs mb-2 font-mono bg-white/5 inline-block px-2 py-1 rounded">Art: ...${shortArt}</p>
             </div>
-            <div>
-                <p class="text-neon_yellow font-bold text-xl mb-3">${p.price.toLocaleString()} <span class="text-xs">UZS</span></p>
+            <div class="mt-4">
+                <p class="text-neon_yellow font-bold text-xl mb-3">${p.price.toLocaleString()} <span class="text-xs text-white/50">UZS</span></p>
                 <button onclick="addToCart('${p.id}', '${shortArt}', '${p.name}', ${p.price})" class="w-full bg-white/10 hover:bg-neon_yellow hover:text-navy text-white text-sm font-bold py-2.5 rounded-lg transition-colors border border-white/5">
                     <i class="fa-solid fa-cart-plus"></i> ${currentLang === 'uz' ? 'Саватга' : currentLang === 'ru' ? 'В корзину' : 'Себетке'}
                 </button>
             </div>
         `;
         container.appendChild(card);
-        observer.observe(card); // 3D uchun
+        observer.observe(card); // 3D effekt
     });
 }
 
@@ -169,8 +162,8 @@ function addToCart(id, article, name, price) {
     saveCart();
     
     const btn = document.getElementById('cart-count').parentElement;
-    btn.classList.add('scale-125');
-    setTimeout(() => btn.classList.remove('scale-125'), 200);
+    btn.classList.add('scale-125', 'bg-neon_yellow', 'text-navy');
+    setTimeout(() => btn.classList.remove('scale-125', 'bg-neon_yellow', 'text-navy'), 300);
 }
 
 function saveCart() {
@@ -195,13 +188,13 @@ function updateCartUI() {
         container.innerHTML = cart.map((item, index) => {
             total += item.price * item.qty;
             return `
-            <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                <div class="flex-1">
-                    <p class="font-bold text-sm text-white truncate w-48">${item.name}</p>
+            <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5 mb-2">
+                <div class="flex-1 overflow-hidden pr-2">
+                    <p class="font-bold text-sm text-white truncate">${item.name}</p>
                     <p class="text-xs text-gray-400 font-mono">Art: ...${item.article}</p>
                     <p class="text-sm text-neon_yellow mt-1">${item.qty} x ${item.price.toLocaleString()} = ${(item.qty * item.price).toLocaleString()}</p>
                 </div>
-                <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-500 bg-red-400/10 p-2 rounded-lg ml-2">
+                <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-500 bg-red-400/10 p-3 rounded-lg ml-2 transition-colors">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </div>`;
@@ -222,7 +215,6 @@ function clearCart() {
     }
 }
 
-// WhatsApp Checkout
 function checkoutWhatsApp() {
     if (cart.length === 0) return alert(currentLang === 'uz' ? "Сават бўш!" : "Корзина пуста!");
     
@@ -235,14 +227,12 @@ function checkoutWhatsApp() {
     });
     
     text += `\n💵 Жами сумма: ${total.toLocaleString()} UZS\nИлтимос, тайёрлаб қўйинг!`;
-    
     window.open(`https://wa.me/998901234567?text=${encodeURIComponent(text)}`, '_blank');
     
     clearCart();
     toggleCart();
 }
 
-// PWA
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
@@ -253,7 +243,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
     installBtn.addEventListener('click', () => {
         installBtn.style.display = 'none';
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
+        deferredPrompt.userChoice.then(() => {
             deferredPrompt = null;
         });
     });
@@ -261,7 +251,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 window.onload = () => {
     fetchProducts();
-    fetchServices(); // Xizmatlar endi alohida yuklanadi
+    fetchServices();
     updateCartUI();
     changeLang('uz');
 };
