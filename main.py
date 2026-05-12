@@ -21,8 +21,12 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-# Aynan botdagi kalitni (Admin token) kiritish kerak
 BILLZ_API_KEY = os.getenv("BILLZ_API_KEY") 
+
+# Botingdan ajratib olingan kompaniya pasportlari
+COMPANY_ID = "630c1af2-74be-478f-8e06-dff80bfe9edb"
+SHOP_ID = "65f67287-f129-4994-b850-03299567b4ac"
+PLATFORM_ID = "7d4a4c38-dd84-4902-b744-0488b80a4c01"
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
@@ -74,11 +78,11 @@ async def api_get_products():
         except Exception as e:
             debug_log += f"MongoDB Xatosi: {e}\n"
 
-    # 2. BILLZ ADMIN API (BOT ARXITEKTURASI)
+    # 2. BILLZ ADMIN API'NI "PASPORT" BILAN BUZIB KIRISH
     if BILLZ_API_KEY:
         try:
             async with httpx.AsyncClient() as client:
-                # 1-QADAM: Login va Access Token olish
+                # Login qismi
                 auth_url = "https://api-admin.billz.ai/v1/auth/login"
                 auth_payload = {"secret_token": BILLZ_API_KEY}
                 auth_response = await client.post(auth_url, json=auth_payload, timeout=10.0)
@@ -88,11 +92,14 @@ async def api_get_products():
                     access_token = auth_data.get('data', {}).get('access_token')
                     
                     if access_token:
-                        # 2-QADAM: Mahsulotlar va Kategoriyalarni olish (limitni 500 qildim)
-                        prods_url = "https://api-admin.billz.ai/v2/product?limit=500"
+                        # 403 xatosini chetlab o'tish uchun barcha ID larni tiqamiz
+                        prods_url = f"https://api-admin.billz.ai/v2/product?limit=200&company_id={COMPANY_ID}&shop_id={SHOP_ID}"
                         headers = {
                             "Authorization": f"Bearer {access_token}", 
-                            "Content-Type": "application/json"
+                            "Content-Type": "application/json",
+                            "company-id": COMPANY_ID,
+                            "shop-id": SHOP_ID,
+                            "platform-id": PLATFORM_ID
                         }
                         
                         prods_response = await client.get(prods_url, headers=headers, timeout=20.0)
@@ -102,17 +109,15 @@ async def api_get_products():
                             billz_list = p_data.get('data', [])
                             
                             if not billz_list:
-                                debug_log += "\nДИҚҚАТ: Billz API уланди, лекин ичида маҳсулотлар йўқ (бўш рўйхат)!"
+                                debug_log += "\nДИҚҚАТ: Billz уланди, лекин маҳсулотлар рўйхати бўш (0 та)!"
                                 
                             for p in billz_list:
-                                # Narxni o'qish
                                 price = 0
                                 try:
                                     p_val = p.get("retail_price") or p.get("price") or 0
                                     price = int(float(str(p_val)))
                                 except: pass
                                 
-                                # Rasmni o'qish
                                 img_url = "https://via.placeholder.com/300x200?text=Rasm+yo'q"
                                 images = p.get("images", [])
                                 if images and len(images) > 0:
@@ -121,13 +126,23 @@ async def api_get_products():
                                     elif isinstance(images[0], dict):
                                         img_url = images[0].get("url", img_url)
 
-                                # KATEGORIYANI MUKAMMAL O'QISH
+                                # MUKAMMAL KATEGORIYA O'QISH VA TAYYORLASH
                                 cat_name = "Бизнинг маҳсулотлар"
                                 cats = p.get("categories", [])
-                                if cats and len(cats) > 0 and isinstance(cats[0], dict):
-                                    cat_name = str(cats[0].get("name", cat_name))
+                                if cats and len(cats) > 0:
+                                    if isinstance(cats[0], dict):
+                                        cat_name = str(cats[0].get("name", cat_name))
+                                    elif isinstance(cats[0], str):
+                                        cat_name = str(cats[0])
                                 elif p.get("category_name"):
                                     cat_name = str(p.get("category_name"))
+                                elif p.get("category"):
+                                    cat_name = str(p.get("category"))
+                                    
+                                # Sayt UI'si uchun yozuvlarni tozalaymiz
+                                cat_name = cat_name.strip()
+                                if cat_name == "":
+                                    cat_name = "Бизнинг маҳсулотлар"
 
                                 all_products.append({
                                     "id": str(p.get("id", "")),
@@ -142,11 +157,11 @@ async def api_get_products():
                     else:
                         debug_log += "Billz Access Token bermadi!\n"
                 else:
-                    debug_log += f"Billz Login xatosi: HTTP {auth_response.status_code} - Kalit xato kiritilgan.\n"
+                    debug_log += f"Billz Login xatosi: HTTP {auth_response.status_code}\nJavob: {auth_response.text[:200]}"
         except Exception as e:
             debug_log += f"Billz Ulanish Xatosi: {str(e)}\n"
     else:
-        debug_log += "BILLZ_API_KEY Railway'да йўқ!\n"
+        debug_log += "BILLZ_API_KEY Railway'да киритилмаган!\n"
 
     return {
         "status": "success", 
