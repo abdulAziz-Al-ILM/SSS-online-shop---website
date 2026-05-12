@@ -2,23 +2,24 @@ let currentLang = 'uz';
 let products = [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-// Tilni o'zgartirish tizimi
-function changeLang() {
-    currentLang = document.getElementById('lang-select').value;
+// Tilni o'zgartirish
+function changeLang(lang) {
+    if(lang) currentLang = lang;
     document.querySelectorAll('.lang-text').forEach(el => {
         if (el.dataset[currentLang]) {
             if (el.tagName === 'INPUT') el.placeholder = el.dataset[currentLang];
             else el.innerText = el.dataset[currentLang];
         }
     });
-    renderProducts();
+    renderCategories();
+    renderProducts(document.getElementById('search-input').value.toLowerCase());
     updateCartUI();
 }
 
-// 3D Effekt uchun Intersection Observer (o'rtaga kelgan element kattalashadi)
+// 3D Effekt Observer
 const observerOptions = {
-    root: document.getElementById('product-carousel'),
-    rootMargin: '0px -40% 0px -40%', 
+    root: document.getElementById('products-container'),
+    rootMargin: '0px -35% 0px -35%', // Ekran markazini ushlash
     threshold: 0
 };
 
@@ -32,43 +33,41 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// Mahsulotlarni O'ZIMIZNING BACKEND (main.py) orqali xavfsiz tortib olish
+// Mahsulotlarni backenddan xavfsiz tortish
 async function fetchProducts() {
     try {
         const response = await fetch('/api/products'); 
-        if (!response.ok) throw new Error("Serverdan ma'lumot olishda xato");
+        if (!response.ok) throw new Error("Server xatosi");
 
         const resData = await response.json();
-        const data = resData.data; // Backenddan kelgan "data" qismi
+        const data = resData.data; 
         
-        // Ham Billz API formatiga, ham o'zimizning MongoDB formatimizga tushadigan universal formatlash
         products = data.map(item => ({
-            id: item.id || item._id, // Billz 'id' qaytaradi, Mongo '_id'
+            id: item.id || item._id,
             name: item.name,
             article: item.sku || item.article || "0000",
             price: item.price || 0,
             category: item.category_name || item.category || "Boshqa",
-            // Rasm Billzdan kelsa url, Mongodan kelsa file_id. File_id bo'lsa uni proxy orqali ochamiz
             img: item.image_url ? item.image_url : (item.file_id ? `/api/image/${item.file_id}` : "https://via.placeholder.com/200?text=Rasm+yo'q")
         }));
         
         renderCategories();
         renderProducts();
     } catch (error) {
-        console.error("Mahsulotlarni yuklashda xatolik:", error);
-        document.getElementById('product-carousel').innerHTML = "<p style='text-align:center;'>Mahsulotlarni yuklashda xatolik yuz berdi. Iltimos sahifani yangilang.</p>";
+        console.error("Xato:", error);
+        document.getElementById('products-container').innerHTML = "<p class='text-white text-center w-full'>Маҳсулотларни юклашда хатолик. Илтимос, янгиланг.</p>";
     }
 }
 
 let activeCategory = 'All';
 
 function renderCategories() {
-    const tabs = document.getElementById('category-tabs');
+    const tabs = document.getElementById('category-filters');
     const categories = ['All', ...new Set(products.map(p => p.category))];
     
     tabs.innerHTML = categories.map(c => 
-        `<button class="${c === activeCategory ? 'active' : ''}" onclick="filterCategory('${c}')">
-            ${c === 'All' ? (currentLang === 'uz' ? 'Barchasi' : currentLang === 'ru' ? 'Все' : 'Баары') : c}
+        `<button class="category-btn ${c === activeCategory ? 'active' : ''}" onclick="filterCategory('${c}')">
+            ${c === 'All' ? (currentLang === 'uz' ? 'Барчаси' : currentLang === 'ru' ? 'Все' : 'Баары') : c}
         </button>`
     ).join('');
 }
@@ -76,7 +75,7 @@ function renderCategories() {
 function filterCategory(cat) {
     activeCategory = cat;
     renderCategories();
-    renderProducts();
+    filterProducts();
 }
 
 function filterProducts() {
@@ -84,7 +83,7 @@ function filterProducts() {
 }
 
 function renderProducts(searchQuery = '') {
-    const container = document.getElementById('product-carousel');
+    const container = document.getElementById('products-container');
     container.innerHTML = '';
     
     const filtered = products.filter(p => {
@@ -93,28 +92,38 @@ function renderProducts(searchQuery = '') {
         return matchCat && matchSearch;
     });
 
+    if(filtered.length === 0) {
+        container.innerHTML = `<p class="text-gray-400 p-4">${currentLang === 'uz' ? 'Topilmadi' : 'Не найдено'}</p>`;
+        return;
+    }
+
     filtered.forEach(p => {
-        // Artikulning faqat oxirgi 4 ta raqami olinadi
         const shortArt = String(p.article).slice(-4);
         const card = document.createElement('div');
-        card.className = 'product-card';
+        // Tailwind classlari dizayninga moslangan
+        card.className = 'product-card glass-card p-4 flex flex-col justify-between h-full';
         card.innerHTML = `
-            <img src="${p.img}" loading="lazy" alt="${p.name}">
-            <h3>${p.name}</h3>
-            <p class="article">Art: ...${shortArt}</p>
-            <p class="price">${p.price.toLocaleString()} UZS</p>
-            <button onclick="addToCart('${p.id}', '${shortArt}', '${p.name}', ${p.price})">
-                ${currentLang === 'uz' ? 'Savatga qo\'shish' : currentLang === 'ru' ? 'В корзину' : 'Себетке кошуу'}
-            </button>
+            <div>
+                <img src="${p.img}" loading="lazy" alt="${p.name}" class="w-full h-36 object-cover rounded-xl mb-3 border border-white/5">
+                <h3 class="text-white font-bold text-lg leading-tight mb-1 truncate">${p.name}</h3>
+                <p class="text-gray-400 text-xs mb-2 font-mono">Art: ...${shortArt}</p>
+            </div>
+            <div>
+                <p class="text-neon_yellow font-bold text-xl mb-3">${p.price.toLocaleString()} <span class="text-xs">UZS</span></p>
+                <button onclick="addToCart('${p.id}', '${shortArt}', '${p.name}', ${p.price})" class="w-full bg-white/10 hover:bg-neon_yellow hover:text-navy text-white text-sm font-bold py-2.5 rounded-lg transition-colors border border-white/5">
+                    <i class="fa-solid fa-cart-plus"></i> ${currentLang === 'uz' ? 'Саватга' : currentLang === 'ru' ? 'В корзину' : 'Себетке'}
+                </button>
+            </div>
         `;
         container.appendChild(card);
-        observer.observe(card); // 3D effekt uchun observerga qo'shamiz
+        observer.observe(card); // 3D uchun
     });
 }
 
-// Savatcha tizimi
+// Savatcha Logikasi
 function addToCart(id, article, name, price) {
-    let qtyStr = prompt(currentLang === 'uz' ? "Nechta qo'shmoqchisiz?" : currentLang === 'ru' ? "Сколько добавить?" : "Канча кошосуз?", "1");
+    let msg = currentLang === 'uz' ? "Нечта қўшмоқчисиз?" : currentLang === 'ru' ? "Сколько добавить?" : "Канча кошосуз?";
+    let qtyStr = prompt(msg, "1");
     let qty = parseInt(qtyStr);
     if (isNaN(qty) || qty <= 0) return;
 
@@ -125,6 +134,11 @@ function addToCart(id, article, name, price) {
         cart.push({ id, article, name, price, qty });
     }
     saveCart();
+    
+    // Qisqa animatsiya tugmada
+    const btn = document.getElementById('cart-count').parentElement;
+    btn.classList.add('scale-125');
+    setTimeout(() => btn.classList.remove('scale-125'), 200);
 }
 
 function saveCart() {
@@ -134,7 +148,7 @@ function saveCart() {
 
 function toggleCart() {
     const modal = document.getElementById('cart-modal');
-    modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+    modal.classList.toggle('hidden');
     updateCartUI();
 }
 
@@ -144,21 +158,24 @@ function updateCartUI() {
     let total = 0;
     
     if (cart.length === 0) {
-        container.innerHTML = `<p>${currentLang === 'uz' ? 'Savatcha bo\'sh' : currentLang === 'ru' ? 'Корзина пуста' : 'Себет бош'}</p>`;
+        container.innerHTML = `<p class="text-gray-400 text-center py-6">${currentLang === 'uz' ? 'Сават бўш' : currentLang === 'ru' ? 'Корзина пуста' : 'Себет бош'}</p>`;
     } else {
         container.innerHTML = cart.map((item, index) => {
             total += item.price * item.qty;
             return `
-            <div class="cart-item">
-                <div>
-                    <strong>${item.name}</strong> (Art: ...${item.article})<br>
-                    ${item.qty} x ${item.price.toLocaleString()} = ${(item.qty * item.price).toLocaleString()} UZS
+            <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
+                <div class="flex-1">
+                    <p class="font-bold text-sm text-white truncate w-48">${item.name}</p>
+                    <p class="text-xs text-gray-400 font-mono">Art: ...${item.article}</p>
+                    <p class="text-sm text-neon_yellow mt-1">${item.qty} x ${item.price.toLocaleString()} = ${(item.qty * item.price).toLocaleString()}</p>
                 </div>
-                <button onclick="removeFromCart(${index})">X</button>
+                <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-500 bg-red-400/10 p-2 rounded-lg ml-2">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
             </div>`;
         }).join('');
     }
-    document.getElementById('cart-total').innerText = total.toLocaleString();
+    document.getElementById('cart-total').innerText = total.toLocaleString() + " UZS";
 }
 
 function removeFromCart(index) {
@@ -167,31 +184,34 @@ function removeFromCart(index) {
 }
 
 function clearCart() {
-    cart = [];
-    saveCart();
+    if(confirm(currentLang === 'uz' ? "Саватни тўлиқ тозалаймизми?" : "Очистить корзину полностью?")) {
+        cart = [];
+        saveCart();
+    }
 }
 
-// WhatsApp Checkout Mantiqi
+// WhatsApp Checkout
 function checkoutWhatsApp() {
-    if (cart.length === 0) return alert(currentLang === 'uz' ? "Savatcha bo'sh!" : currentLang === 'ru' ? "Корзина пуста!" : "Себет бош!");
+    if (cart.length === 0) return alert(currentLang === 'uz' ? "Сават бўш!" : "Корзина пуста!");
     
-    let text = "Assalomu alaykum! Men quyidagi artikullar bo'yicha buyurtma bermoqchiman:\n\n";
+    let text = "Ассалому алайкум! Мен қуйидаги артикуллар бўйича буюртма бермоқчиман:\n\n";
     let total = 0;
     
     cart.forEach(item => {
-        text += `🔹 Art: ...${item.article} | ${item.qty} ta x ${item.price} = ${item.price * item.qty} UZS\n`;
+        text += `🔹 Art: ...${item.article} | ${item.qty} та x ${item.price} = ${item.price * item.qty} UZS\n`;
         total += item.price * item.qty;
     });
     
-    text += `\n💵 Jami summa: ${total.toLocaleString()} UZS\nIltimos, tayyorlab qo'ying!`;
+    text += `\n💵 Жами сумма: ${total.toLocaleString()} UZS\nИлтимос, тайёрлаб қўйинг!`;
     
-    // Telefon raqamingni shu yerga yoz (+998...)
+    // Serverdan kelgan telefon raqami yoki statik (998901234567 o'rniga o'z raqamingni qo'y)
     window.open(`https://wa.me/998901234567?text=${encodeURIComponent(text)}`, '_blank');
+    
     clearCart();
     toggleCart();
 }
 
-// PWA o'rnatish mantig'i
+// PWA
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
@@ -211,5 +231,5 @@ window.addEventListener('beforeinstallprompt', (e) => {
 window.onload = () => {
     fetchProducts();
     updateCartUI();
-    document.getElementById('lang-select').value = currentLang;
+    changeLang('uz'); // Default til
 };
