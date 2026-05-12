@@ -1,255 +1,199 @@
-/* SSS ONLINE SHOP - CORE STYLESHEET v4.0
-    Concept: Ultra-Modern / Edge-to-Edge / High Contrast / Showcase Grid
-*/
-
-/* 1. FUNDAMENTALS */
 :root {
-    --navy-deep: #080d1a;
-    --navy: #0f172a;
-    --navy-light: #1e293b;
-    --neon-yellow: #facc15;
-    --neon-orange: #f97316;
-    --white: #ffffff;
-    --glass: rgba(15, 23, 42, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.08);
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+    --bg-color: #f5f6f8;
+    --text-color: #222;
+    --primary-color: #D4AF37; /* Tillarang S mos keladigan rang */
+    --card-bg: #fff;
+    --border-radius: 12px;
 }
 
 body {
-    background-color: var(--navy);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
-/* 2. TYPOGRAPHY SCALING */
-h1, h2, h3, h4, .font-heading {
-    font-family: 'Rajdhani', sans-serif;
-    line-height: 0.9;
-}
-
-p, span, div, button {
-    font-family: 'Inter', sans-serif;
-}
-
-/* 3. CUSTOM SCROLLBAR (ASOSIY SAHIFA UCHUN) */
-::-webkit-scrollbar {
-    width: 5px;
-}
-::-webkit-scrollbar-track {
-    background: var(--navy-deep);
-}
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, var(--navy-light), var(--neon-yellow));
-    border-radius: 20px;
-}
-
-/* 4. IMMERSIVE HERO REFINEMENT */
-.hero-image {
-    filter: brightness(0.85) contrast(1.1);
-    transform: scale(1.02);
-    transition: transform 15s ease-out;
-}
-
-header:hover .hero-image {
-    transform: scale(1.1);
-}
-
-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 30%;
-    background: linear-gradient(to top, var(--navy) 10%, transparent);
-    z-index: 15;
-}
-
-/* 5. FIXED NEON BUTTON */
-.btn-neon {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, var(--neon-yellow) 0%, var(--neon-orange) 100%);
-    color: var(--navy-deep) !important;
-    overflow: hidden;
-    transition: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
-    z-index: 1;
-    border: none;
-    cursor: pointer;
-}
-
-.btn-neon:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 20px 40px rgba(250, 204, 21, 0.3);
-}
-
-.btn-neon::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -150%;
-    width: 80%;
-    height: 100%;
-    background: linear-gradient(
-        to right,
-        rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.5) 50%,
-        rgba(255, 255, 255, 0) 100%
-    );
-    transform: skewX(-30deg);
-    transition: none;
-    z-index: 2;
-}
-
-.btn-neon:hover::before {
-    left: 150%;
-    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 6. GLASSMORPHISM COMPONENTS */
-.glass-card {
-    background: var(--glass);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid var(--glass-border);
-    border-radius: 3rem;
-    transition: all 0.4s ease;
-}
-
-.glass-card:hover {
-    border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-8px);
-}
-
-.glass-btn {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 1rem;
-}
-
-/* 7. SOCIAL & CATEGORY CARDS */
-.social-card {
+header {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    padding: 3rem 1rem;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 2.5rem;
-    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    padding: 15px 20px;
+    background: var(--card-bg);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-.social-card:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-10px) scale(1.02);
-}
-
-/* ==================================================================
-   8. SHOWCASE VITRINA VA KATEGORIYALAR (YANGI LOGIKA)
-   ================================================================== */
-.showcase-grid {
-    display: grid;
-    grid-template-rows: repeat(2, 1fr); /* Qat'iy 2 qator */
-    grid-auto-flow: column; /* Yonma-yon tizish */
-    grid-auto-columns: 280px; /* Har bir kartochka kengligi */
-    gap: 1.5rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    padding-bottom: 1.5rem;
-}
-
-/* Vitrina skrollbari */
-.showcase-grid::-webkit-scrollbar {
-    height: 8px;
-}
-.showcase-grid::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-}
-.showcase-grid::-webkit-scrollbar-thumb {
-    background: linear-gradient(to right, var(--neon-yellow), var(--neon-orange));
-    border-radius: 10px;
-}
-
-.showcase-grid > div {
-    scroll-snap-align: start;
-}
-
-/* Kategoriya tugmalari */
-.category-btn {
-    white-space: nowrap;
-    padding: 0.75rem 2rem;
-    border-radius: 2rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #94a3b8;
-    font-weight: 600;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+.header-actions select, .header-actions button {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: var(--bg-color);
     cursor: pointer;
-    scroll-snap-align: start;
-    backdrop-filter: blur(10px);
+    margin-left: 10px;
 }
 
-.category-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+/* Xizmatlar */
+.services-section {
+    padding: 20px;
+    text-align: center;
+}
+.buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+.service-item {
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+.btn {
+    display: block;
+    padding: 10px;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.btn.telegram, .btn.channel { background: #0088cc; }
+.btn.whatsapp { background: #25D366; }
+.btn.instagram { background: #E1306C; }
+.desc { font-size: 0.85em; color: #666; margin: 0; }
+
+/* Qidiruv va Kategoriyalar */
+.products-section { padding: 20px; }
+.search-category-bar { margin-bottom: 20px; }
+#search-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+.category-tabs {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+.category-tabs button {
+    padding: 8px 16px;
+    border: none;
+    background: #ddd;
+    border-radius: 20px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.category-tabs button.active {
+    background: var(--primary-color);
     color: white;
 }
 
-.category-btn.active {
-    background: var(--neon-orange);
-    color: var(--navy-deep);
-    border-color: var(--neon-orange);
-    box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
-    transform: translateY(-2px);
+/* 2 Qatorli 3D Karusel */
+.carousel-container {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-auto-flow: column;
+    grid-auto-columns: 200px;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 20px 0;
+    scroll-behavior: smooth;
+}
+.carousel-container::-webkit-scrollbar { display: none; } /* Scrollbarni yashirish */
+
+.product-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    scroll-snap-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0.7;
+    transform: scale(0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-.hide-scrollbar::-webkit-scrollbar {
+/* 3D Effekt - O'rtaga kelgan element kattalashadi */
+.product-card.center-3d {
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    z-index: 10;
+}
+
+.product-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.product-card h3 { font-size: 1em; margin: 10px 0 5px; }
+.product-card .article { font-size: 0.8em; color: #888; }
+.product-card .price { font-weight: bold; color: var(--primary-color); margin-bottom: 10px;}
+.product-card button {
+    background: #222;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Savatcha Modal */
+.modal {
     display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
 }
-.hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+.modal-content {
+    background: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    border-radius: var(--border-radius);
+    max-height: 80vh;
+    overflow-y: auto;
 }
+.close { float: right; font-size: 24px; cursor: pointer; }
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+}
+.cart-item button {
+    background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;
+}
+.cart-footer { margin-top: 20px; text-align: right; }
+.cart-footer button { padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; margin-left: 10px;}
+.clear-btn { background: #ddd; color: #333; }
+.checkout-btn { background: #25D366; color: white; font-weight: bold; }
 
-/* 9. UTILITIES & ANIMATIONS */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+/* Footer */
+footer {
+    text-align: center;
+    padding: 30px 20px;
+    background: #111;
+    color: #aaa;
 }
-
-main section {
-    animation: fadeIn 1s ease-out forwards;
+.footer-tel {
+    display: block;
+    font-size: 1.5em;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
-
-/* 10. RESPONSIVE DESIGN (BREAKPOINTS) */
-@media (max-width: 1024px) {
-    .max-w-7xl { padding-left: 2rem; padding-right: 2rem; }
-}
-
-@media (max-width: 768px) {
-    header { height: 75vh; }
-    .hero-image { object-fit: cover; }
-    .glass-card { border-radius: 2rem; padding: 2rem !important; }
-    .text-6xl { font-size: 4rem !important; }
-    
-    .showcase-grid {
-        grid-auto-columns: 240px; /* Mobilda biroz kichraytiramiz */
-        gap: 1rem;
-    }
-}
+.powered { font-size: 0.9em; margin-top: 15px; }
+.powered strong { color: var(--primary-color); }
