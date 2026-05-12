@@ -31,7 +31,7 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// --- MAHSULOTLAR ---
+// --- MAHSULOTLAR VA DEBUG ---
 async function fetchProducts() {
     try {
         const response = await fetch('/api/products'); 
@@ -39,11 +39,15 @@ async function fetchProducts() {
 
         const resData = await response.json();
         products = resData.data || [];
+        const debugLog = resData.debug_info || "Маълумот йўқ";
         
+        // Agar mahsulotlar umuman kelmasa, xatoni ochiq ko'rsatamiz!
         if(products.length === 0) {
             document.getElementById('products-container').innerHTML = `
-                <div class="col-span-full w-full text-center py-10 glass-card">
-                    <p class='text-neon_yellow text-xl font-bold mb-2'>Ҳозирча маҳсулотлар мавжуд эмас</p>
+                <div class="col-span-full w-full glass-card border border-red-500/50 p-6">
+                    <p class='text-neon_yellow text-xl font-bold mb-4'>⚠️ Маҳсулотлар юкланмади. Сабаби:</p>
+                    <pre class='text-gray-300 text-xs bg-black/60 p-4 rounded-xl overflow-x-auto whitespace-pre-wrap font-mono mb-4'>${debugLog}</pre>
+                    <p class="text-white font-bold bg-red-500/20 py-2 px-4 rounded-lg inline-block">Шу қора ойнадаги ёзувни нусхалаб, менга (сунъий интеллектга) ташланг!</p>
                 </div>`;
             return;
         }
@@ -52,7 +56,7 @@ async function fetchProducts() {
         renderProducts();
     } catch (error) {
         console.error("Xatolik:", error);
-        document.getElementById('products-container').innerHTML = `<p class='text-red-400 text-center w-full font-bold py-10'>Сервердан маълумот олишда узилиш бўлди.</p>`;
+        document.getElementById('products-container').innerHTML = `<p class='text-red-400 text-center w-full font-bold py-10'>Серверга уланишда хатолик: ${error.message}</p>`;
     }
 }
 
@@ -83,7 +87,7 @@ function renderServices(services) {
     `).join('');
 }
 
-// --- LOKATSIYALAR ---
+// --- LOKATSIYALAR (To'liq bosiladigan va chiroyli dizayn bilan) ---
 async function fetchLocations() {
     try {
         const response = await fetch('/api/locations');
@@ -102,20 +106,32 @@ function renderLocations(locations) {
         return;
     }
     
-    container.innerHTML = locations.map(loc => `
-        <div class="glass-card p-6 border-l-4 border-red-500 hover:bg-white/5 transition-all flex flex-col justify-between">
-            <div class="mb-6">
-                <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-location-dot text-red-500"></i> ${loc.name}
-                </h3>
-                <p class="text-gray-400 text-sm">${loc.address || ''}</p>
+    container.innerHTML = locations.map(loc => {
+        // Bazada lat/lon yoki latitude/longitude qilib saqlangan bo'lishi mumkin
+        const lat = loc.lat || loc.latitude;
+        const lon = loc.lon || loc.longitude;
+        
+        // Agar kordinatalar bo'lsa butun kartochka havola vazifasini bajaradi
+        const hasCoords = (lat && lon);
+        const mapLink = hasCoords ? `https://yandex.com/maps/?pt=${lon},${lat}&z=16&l=map` : '#';
+        const onClickAttr = hasCoords ? `onclick="window.open('${mapLink}', '_blank')"` : '';
+        const cursorStyle = hasCoords ? 'cursor-pointer hover:border-neon_yellow hover:scale-105 hover:bg-white/5' : '';
+
+        return `
+        <div ${onClickAttr} class="glass-card p-6 border-l-4 border-red-500 transition-all flex flex-col justify-center group ${cursorStyle}">
+            <div class="flex items-center gap-4">
+                <div class="bg-red-500/10 p-4 rounded-2xl group-hover:bg-neon_yellow/20 transition-colors">
+                    <i class="fa-solid fa-map-location-dot text-3xl text-red-500 group-hover:text-neon_yellow transition-colors"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-1 group-hover:text-neon_yellow transition-colors">${loc.name}</h3>
+                    <p class="text-gray-400 text-sm">${loc.address || ''}</p>
+                </div>
             </div>
-            ${loc.lat && loc.lon ? `
-            <a href="https://yandex.com/maps/?pt=${loc.lon},${loc.lat}&z=16&l=map" target="_blank" class="w-full bg-red-500/20 hover:bg-red-500/40 text-red-400 text-center py-3 rounded-lg text-sm font-bold transition-colors inline-block">
-                Харитада кўриш <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
-            </a>` : ''}
+            ${!hasCoords ? `<p class="text-xs text-red-400 mt-4">* Харита координаталари киритилмаган</p>` : ''}
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // --- LOGIKA VA UI ---
@@ -285,7 +301,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 window.onload = () => {
     fetchProducts();
     fetchServices();
-    fetchLocations(); // Lokatsiyalarni ham yuklaymiz
+    fetchLocations();
     updateCartUI();
     changeLang('uz');
 };
