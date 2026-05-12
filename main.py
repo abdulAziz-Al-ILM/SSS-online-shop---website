@@ -6,7 +6,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
 
-# Baza faylini qanday nomlaganingni bilmaganimiz uchun ikkalasini ham sinab ko'ramiz
 try:
     import database_web as db_module
 except ImportError:
@@ -27,11 +26,9 @@ BILLZ_API_URL = os.getenv("BILLZ_API_URL", "https://api.billz.uz/v1/products")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    # Asosiy ma'lumotlarni xavfsiz chaqirish
     get_info = getattr(db_module, "get_combined_info", getattr(db_module, "get_shop_info", None))
     info = await get_info() if get_info else {}
     
-    # Agar bazada ma'lumot bo'lmasa, sayt qulamasligi uchun default qiymatlar
     if not info:
         info = {
             "about": "Eng sifatli qurilish mollari ILM Mizan me'morligi ostida.",
@@ -45,59 +42,63 @@ async def read_root(request: Request):
     return templates.TemplateResponse(
         request=request, 
         name="index.html", 
-        context={
-            "request": request,
-            "info": info, 
-            "logo_id": info.get("logo_id")
-        }
+        context={"request": request, "info": info, "logo_id": info.get("logo_id")}
     )
 
 @app.get("/api/products")
 async def api_get_products():
-    """Bot bazasi va Billz API'dagi mahsulotlarni bittada yig'uvchi Beton Mantiq"""
     all_products = []
     
-    # 1. BOT BAZASIDAN OLISH (MongoDB)
+    # 1. BOT BAZASI (Xatoliklarni chetlab o'tuvchi mantiq bilan)
     get_prods = getattr(db_module, "get_all_products", getattr(db_module, "get_all_active_products", None))
     if get_prods:
         try:
             db_prods = await get_prods()
             if db_prods:
                 for p in db_prods:
-                    # Frontend uchun standartlashtiramiz
+                    try:
+                        price = int(float(str(p.get("price", 0))))
+                    except (ValueError, TypeError):
+                        price = 0
+                    
                     prod_id = str(p.get("_id", ""))
                     all_products.append({
                         "id": prod_id,
-                        "name": p.get("name", "Nomsiz mahsulot"),
-                        "article": f"BOT-{prod_id[-4:]}", # Bot mahsulotlariga maxsus artikul
-                        "price": int(p.get("price", 0)),
-                        "category": p.get("category", "Бизнинг маҳсулотлар"),
+                        "name": str(p.get("name", "Nomsiz")),
+                        "article": f"BOT-{prod_id[-4:]}",
+                        "price": price,
+                        "category": str(p.get("category", "Бизнинг маҳсулотлар")),
                         "img": f"/api/image/{p.get('file_id')}" if p.get('file_id') else "https://via.placeholder.com/300x200?text=Rasm+yo'q"
                     })
         except Exception as e:
             print(f"❌ MONGODB XATOSI: {e}")
 
-    # 2. BILLZ API DAN OLISH
+    # 2. BILLZ API (Har bir mahsulotni alohida tahlil qilib, xatosini filtrlaydi)
     if BILLZ_API_KEY:
         try:
             async with httpx.AsyncClient() as client:
                 headers = {"Authorization": f"Bearer {BILLZ_API_KEY}", "Content-Type": "application/json"}
-                response = await client.get(BILLZ_API_URL, headers=headers, timeout=8.0)
+                response = await client.get(BILLZ_API_URL, headers=headers, timeout=10.0)
                 if response.status_code == 200:
                     data = response.json()
                     billz_list = data if isinstance(data, list) else (data.get("products") or data.get("items") or data.get("data") or [])
                     
                     for p in billz_list:
+                        try:
+                            price = int(float(str(p.get("price", 0))))
+                        except (ValueError, TypeError):
+                            price = 0
+                            
                         all_products.append({
                             "id": str(p.get("id", "")),
-                            "name": p.get("name", "Nomsiz"),
-                            "article": p.get("sku") or p.get("article") or str(p.get("id"))[-4:],
-                            "price": int(p.get("price", 0)),
-                            "category": p.get("category_name") or p.get("category") or "Billz Catalog",
-                            "img": p.get("image_url") or "https://via.placeholder.com/300x200?text=Rasm+yo'q"
+                            "name": str(p.get("name", "Nomsiz")),
+                            "article": str(p.get("sku") or p.get("article") or str(p.get("id", ""))[-4:]),
+                            "price": price,
+                            "category": str(p.get("category_name") or p.get("category") or "Billz Catalog"),
+                            "img": str(p.get("image_url") or "https://via.placeholder.com/300x200?text=Rasm+yo'q")
                         })
                 else:
-                    print(f"❌ BILLZ API XATOSI: Status {response.status_code}")
+                    print(f"❌ BILLZ API XATOSI: HTTP {response.status_code} - {response.text}")
         except Exception as e:
             print(f"❌ BILLZ ULANISH XATOSI: {e}")
 
@@ -105,7 +106,6 @@ async def api_get_products():
 
 @app.get("/api/services")
 async def api_get_services():
-    """Botdagi xizmatlarni xavfsiz chaqirish"""
     get_srv = getattr(db_module, "get_all_services", None)
     services = []
     if get_srv:
@@ -115,9 +115,20 @@ async def api_get_services():
             print(f"❌ XIZMATLAR XATOSI: {e}")
     return {"status": "success", "data": services}
 
+@app.get("/api/locations")
+async def api_get_locations():
+    """Manzillar/Filiallar uchun API"""
+    get_loc = getattr(db_module, "get_all_locations", None)
+    locations = []
+    if get_loc:
+        try:
+            locations = await get_loc()
+        except Exception as e:
+            print(f"❌ LOKATSIYA XATOSI: {e}")
+    return {"status": "success", "data": locations}
+
 @app.get("/api/image/{file_id}")
 async def get_telegram_image(file_id: str):
-    """Telegramdan rasmni saytga o'girib berish"""
     if not file_id or file_id == "None":
         return {"error": "Noto'g'ri ID"}
     try:
