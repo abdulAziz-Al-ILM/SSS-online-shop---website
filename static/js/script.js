@@ -276,31 +276,51 @@ function clearCart() {
     }
 }
 
-// PWA: Service Worker o'rnatish
+// ==========================================
+// PWA VA O'RNATISH MANTIQI
+// ==========================================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').then(reg => {
-            console.log('ServiceWorker muvaffaqiyatli ishga tushdi: ', reg.scope);
-        }).catch(err => {
-            console.log('ServiceWorker xatosi: ', err);
-        });
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW xato: ', err));
     });
 }
 
+const installBtn = document.getElementById('install-pwa-btn');
 let deferredPrompt;
+
+// Tugma doim ko'rinib tursin, foydalanuvchi ilova borligini his qilsin
+installBtn.style.display = 'block';
+
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    const installBtn = document.getElementById('install-pwa-btn');
-    installBtn.style.display = 'block';
-    
-    installBtn.addEventListener('click', () => {
-        installBtn.style.display = 'none';
+});
+
+installBtn.addEventListener('click', () => {
+    // Foydalanuvchi Telegramdan kirganini tekshiramiz
+    const isTelegram = /Telegram/i.test(navigator.userAgent);
+
+    if (isTelegram) {
+        alert(currentLang === 'kg' ? "Telegram'дын ичинен орнотуу мүмкүн эмес. Оң жогорку бурчтагы 3 чекитти басып, 'Браузерде ачуу' (Open in Browser) дегенди тандаңыз." :
+              currentLang === 'ru' ? "Нельзя установить прямо из Telegram. Нажмите на 3 точки в правом верхнем углу и выберите 'Открыть в браузере'." :
+              "Telegram ichidan o'rnatib bo'lmaydi. O'ng yuqori burchakdagi 3 ta nuqtani bosib, 'Brauzerda ochish'ni tanlang.");
+        return;
+    }
+
+    if (deferredPrompt) {
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(() => {
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                installBtn.style.display = 'none';
+            }
             deferredPrompt = null;
         });
-    });
+    } else {
+        // iOS yoki boshqa nostandart brauzerlar uchun
+        alert(currentLang === 'kg' ? "Браузердин менюсунан 'Үй экранына кошуу' (Add to Home Screen) баскычын басыңыз." :
+              currentLang === 'ru' ? "Используйте меню браузера 'Добавить на главный экран'." :
+              "Brauzer menyusidan 'Asosiy ekranga qo'shish' (Add to Home Screen) ni tanlang.");
+    }
 });
 
 window.onload = () => {
@@ -308,5 +328,5 @@ window.onload = () => {
     fetchServices();
     fetchLocations();
     updateCartUI();
-    changeLang('kg'); // Boshlang'ich til Qirg'iz tili
+    changeLang('kg'); 
 };
