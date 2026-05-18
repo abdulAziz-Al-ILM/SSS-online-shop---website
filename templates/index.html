@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="kg">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -36,21 +36,21 @@
 <body class="bg-navy text-white min-h-screen flex flex-col font-sans selection:bg-neon_yellow selection:text-navy overflow-x-hidden">
 
     <nav class="fixed top-6 right-6 flex space-x-2 z-[100] items-center">
-        <button id="install-pwa-btn" style="display: none;" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all text-neon_orange lang-text" data-uz="📲 O'rnatish" data-ru="📲 Установить" data-kg="📲 Орнотуу">📲 О'rnatish</button>
+        <button id="install-pwa-btn" style="display: none;" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all text-neon_orange lang-text" data-uz="📲 O'rnatish" data-ru="📲 Установить" data-kg="📲 Орнотуу">📲 Орнотуу</button>
         
         <button onclick="toggleCart()" class="glass-btn px-4 py-2 text-sm font-bold rounded-xl border border-neon_yellow/50 text-neon_yellow hover:bg-neon_yellow hover:text-navy transition-all shadow-[0_0_15px_rgba(250,204,21,0.2)]">
             <i class="fa-solid fa-cart-shopping"></i> <span id="cart-count">0</span>
         </button>
 
+        <button onclick="changeLang('kg')" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all">КГ</button>
         <button onclick="changeLang('uz')" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all">УЗ</button>
         <button onclick="changeLang('ru')" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all">РУ</button>
-        <button onclick="changeLang('kg')" class="glass-btn px-4 py-2 text-xs font-bold rounded-xl border border-white/10 hover:border-neon_yellow transition-all">КГ</button>
     </nav>
 
     <header class="relative w-full h-[85vh] md:h-[90vh] overflow-hidden">
         <div class="absolute inset-0 z-0">
             {% if info.logo_id %}
-            <img src="/api/image/{{ info.logo_id }}" class="hero-image TINY w-full h-full object-cover md:object-contain brightness-[0.85]" alt="SSS Hero Banner">
+            <img src="/api/image/{{ info.logo_id }}" class="hero-image w-full h-full object-cover md:object-contain brightness-[0.85]" alt="SSS Hero Banner">
             {% else %}
             <div class="w-full h-full bg-navy_light flex items-center justify-center">
                 <p class="text-neon_yellow text-9xl font-black font-heading tracking-tighter opacity-20">SSS</p>
@@ -79,11 +79,11 @@
         <section class="text-center px-6 mb-24">
             <div class="max-w-2xl mx-auto glass-card p-12 space-y-8 border-t-2 border-white/10 shadow-[0_30px_60px_-12px_rgba(0,0,0,0.5)]">
                 <p id="site-subtitle" class="text-2xl md:text-3xl text-gray-300 font-heading italic font-light tracking-wide lang-text" data-uz="Ҳар бир хонадон учун энг яхшиси!" data-ru="Лучшее для каждого дома!" data-kg="Ар бир үй үчүн эң жакшысы!">
-                    Ҳар бир хонадон учун энг яхшиси!
+                    Ар бир үй үчүн эң жакшысы!
                 </p>
                 <div class="flex justify-center">
                     <a href="#katalog" class="btn-neon px-16 py-6 rounded-[2rem] text-xl font-bold tracking-[0.2em] uppercase shadow-[0_0_40px_rgba(250,204,21,0.2)] lang-text" data-uz="Каталогга ўтиш" data-ru="Перейти в каталог" data-kg="Каталогго өтүү">
-                        Каталогга ўтиш
+                        Каталогго өтүү
                     </a>
                 </div>
             </div>
@@ -95,7 +95,7 @@
                     <div class="h-2 w-12 bg-blue-500 rounded-full"></div>
                     <span class="text-blue-400 font-bold uppercase tracking-[0.3em] text-xs">Network</span>
                 </div>
-                <h2 class="font-heading text-4xl md:text-5xl font-bold uppercase tracking-tighter lang-text" data-uz="Биз билан алоқа" data-ru="Связь с нами" data-kg="Биз менен байланыш">Биз билан алоқа</h2>
+                <h2 class="font-heading text-4xl md:text-5xl font-bold uppercase tracking-tighter lang-text" data-uz="Биз билан алоқа" data-ru="Связь с нами" data-kg="Биз менен байланыш">Биз менен байланыш</h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -103,25 +103,25 @@
                     <div class="absolute inset-0 bg-blue-500/5 group-hover:bg-blue-500/10 transition-colors"></div>
                     <i class="fa-brands fa-telegram text-5xl mb-3 text-blue-400 group-hover:scale-110 transition duration-500 relative z-10"></i>
                     <p class="font-heading font-bold text-xl relative z-10 tracking-widest text-white">Ботга ўтиш</p>
-                    <p class="text-xs text-gray-400 mt-2 relative z-10 px-2 lang-text" data-uz="Онлайн буюртма бериш учун хизмат қилади." data-ru="Служит для оформления онлайн-заказа." data-kg="Онлайн заказ кылуу үчүн кызмат кылат.">Онлайн буюртма бериш учун хизмат қилади.</p>
+                    <p class="text-xs text-gray-400 mt-2 relative z-10 px-2 lang-text" data-uz="Онлайн буюртма бериш учун хизмат қилади." data-ru="Служит для оформления онлайн-заказа." data-kg="Онлайн заказ кылуу үчүн кызмат кылат.">Онлайн заказ кылуу үчүн кызмат кылат.</p>
                 </a>
                 <a href="{{ info.telegram_channel }}" target="_blank" class="social-card group overflow-hidden relative text-center">
                     <div class="absolute inset-0 bg-blue-400/5 group-hover:bg-blue-400/10 transition-colors"></div>
                     <i class="fa-solid fa-bullhorn text-5xl mb-3 text-blue-300 group-hover:scale-110 transition duration-500 relative z-10"></i>
                     <p class="font-heading font-bold text-xl relative z-10 tracking-widest text-white">Каналимиз</p>
-                    <p class="text-xs text-gray-400 mt-2 relative z-10 px-2 lang-text" data-uz="Янгиликлар ва акциялар ҳақида билиб боринг." data-ru="Узнавайте о новостях и акциях." data-kg="Жаңылыктар жана акциялар жөнүндө билип туруңуз.">Янгиликлар ва акциялар ҳақида билиб боринг.</p>
+                    <p class="text-xs text-gray-400 mt-2 relative z-10 px-2 lang-text" data-uz="Янгиликлар ва акциялар ҳақида билиб боринг." data-ru="Узнавайте о новостях и акциях." data-kg="Жаңылыктар жана акциялар жөнүндө билип туруңуз.">Жаңылыктар жана акциялар жөнүндө билип туруңуз.</p>
                 </a>
                 <a href="{{ info.whatsapp }}" target="_blank" class="social-card group overflow-hidden relative text-center">
                     <div class="absolute inset-0 bg-green-500/5 group-hover:bg-green-500/10 transition-colors"></div>
                     <i class="fa-brands fa-whatsapp text-5xl mb-3 text-green-400 group-hover:scale-110 transition duration-500 relative z-10"></i>
                     <p class="font-heading font-bold text-xl relative z-10 tracking-widest text-white">WhatsApp</p>
-                    <p class="text-xs text-gray-400 mt-2 relative z-10 px-2 lang-text" data-uz="Қўнғироқ орқали тўғридан-тўғри буюртма бериш." data-ru="Оформление заказа напрямую по телефону." data-kg="Телефон аркылуу түз заказ берүү үчүн.">Қўнғироқ орқали тўғридан-тўғри буюртма бериш.</p>
+                    <p class="text-xs text-gray-400 mt-2 relative z-10 px-2 lang-text" data-uz="Қўнғироқ орқали тўғридан-тўғри буюртма бериш." data-ru="Оформление заказа напрямую по телефону." data-kg="Телефон аркылуу түз заказ берүү үчүн.">Телефон аркылуу түз заказ берүү үчүн.</p>
                 </a>
                 <a href="{{ info.instagram }}" target="_blank" class="social-card group overflow-hidden relative text-center">
                     <div class="absolute inset-0 bg-pink-500/5 group-hover:bg-pink-500/10 transition-colors"></div>
                     <i class="fa-brands fa-instagram text-5xl mb-3 text-pink-500 group-hover:scale-110 transition duration-500 relative z-10"></i>
                     <p class="font-heading font-bold text-xl relative z-10 tracking-widest text-white">Instagram</p>
-                    <p class="text-xs text-gray-400 mt-2 relative z-10 px-2 lang-text" data-uz="Қизиқарли видеоларимизни кузатиб боринг." data-ru="Следите за нашими интересными видео." data-kg="Кызыктуу видеолорубузду байкап туруңуз.">Қизиқарли видеоларимизни кузатиб боринг.</p>
+                    <p class="text-xs text-gray-400 mt-2 relative z-10 px-2 lang-text" data-uz="Қизиқарли видеоларимизни кузатиб боринг." data-ru="Следите за нашими интересными видео." data-kg="Кызыктуу видеолорубузду байкап туруңуз.">Кызыктуу видеолорубузду байкап туруңуз.</p>
                 </a>
             </div>
         </section>
@@ -133,7 +133,7 @@
                         <div class="h-2 w-12 bg-neon_yellow rounded-full"></div>
                         <span class="text-neon_yellow font-bold uppercase tracking-[0.3em] text-xs">Expertise</span>
                     </div>
-                    <h2 class="font-heading text-4xl md:text-5xl font-bold uppercase tracking-tighter lang-text" data-uz="Бизнинг хизматлар" data-ru="Наши услуги" data-kg="Биздин кызматтар">Бизнинг хизматлар</h2>
+                    <h2 class="font-heading text-4xl md:text-5xl font-bold uppercase tracking-tighter lang-text" data-uz="Бизнинг хизматлар" data-ru="Наши услуги" data-kg="Биздин кызматтар">Биздин кызматтар</h2>
                 </div>
             </div>
             <div id="services-container" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
@@ -146,7 +146,7 @@
                         <div class="h-2 w-12 bg-red-500 rounded-full"></div>
                         <span class="text-red-400 font-bold uppercase tracking-[0.3em] text-xs">Locations</span>
                     </div>
-                    <h2 class="font-heading text-4xl md:text-5xl font-bold uppercase tracking-tighter lang-text" data-uz="Бизнинг манзиллар" data-ru="Наши адреса" data-kg="Биздин даректер">Бизнинг манзиллар</h2>
+                    <h2 class="font-heading text-4xl md:text-5xl font-bold uppercase tracking-tighter lang-text" data-uz="Бизнинг манзиллар" data-ru="Наши адреса" data-kg="Биздин даректер">Биздин даректер</h2>
                 </div>
             </div>
             <div id="locations-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
@@ -159,17 +159,17 @@
                         <div class="h-2 w-12 bg-neon_orange rounded-full"></div>
                         <span class="text-neon_orange font-bold uppercase tracking-[0.3em] text-xs">Collection</span>
                     </div>
-                    <h2 class="font-heading text-5xl md:text-6xl font-bold uppercase tracking-tighter lang-text" data-uz="Қурилиш моллари" data-ru="Стройматериалы" data-kg="Курулуш материалдары">Қурилиш моллари</h2>
+                    <h2 class="font-heading text-5xl md:text-6xl font-bold uppercase tracking-tighter lang-text" data-uz="Қурилиш моллари" data-ru="Стройматериалы" data-kg="Курулуш материалдары">Курулуш материалдары</h2>
                 </div>
                 <div class="w-full md:w-1/3">
-                    <input type="text" id="search-input" oninput="filterProducts()" placeholder="Қидириш..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-neon_yellow transition-colors lang-text" data-uz="Маҳсулот қидириш..." data-ru="Поиск товаров..." data-kg="Товар издөө...">
+                    <input type="text" id="search-input" oninput="filterProducts()" placeholder="Товар издөө..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-neon_yellow transition-colors lang-text" data-uz="Маҳсулот қидириш..." data-ru="Поиск товаров..." data-kg="Товар издөө...">
                 </div>
             </div>
 
             <div class="glass-card p-6 mb-10 border-l-4 border-neon_yellow bg-white/5">
-                <h3 class="text-xl font-bold text-white mb-2 lang-text" data-uz="🛒 Буюртма бериш тартиби:" data-ru="🛒 Как сделать заказ:" data-kg="🛒 Буйрутма берүү тартиби:">🛒 Буюртма бериш тартиби:</h3>
+                <h3 class="text-xl font-bold text-white mb-2 lang-text" data-uz="🛒 Буюртма бериш тартиби:" data-ru="🛒 Как сделать заказ:" data-kg="🛒 Буйрутма берүү тартиби:">🛒 Буйрутма берүү тартиби:</h3>
                 <p class="text-gray-300 text-sm leading-relaxed lang-text" data-uz="Буюртма бериш учун керакли маҳсулотларни танланг, улар юқоридаги саватга тушади. Керакли нарсаларни танлаб бўлгач, сават устига босинг ва у ердан 'Қўнғироқ қилиш' тугмасини босиб биз билан боғланинг. Танланган маҳсулотларнинг артикулини айтинг. Қолганини телефонда келишиб оламиз!" data-ru="Для оформления заказа выберите нужные товары, они попадут в корзину сверху. После выбора нажмите на корзину, затем на кнопку 'Позвонить' и свяжитесь с нами. Продиктуйте артикулы выбранных товаров. Остальные детали обсудим по телефону!" data-kg="Буйрутма берүү үчүн керектүү товарларды тандаңыз, алар жогорудагы себетке түшөт. Керектүүлөрдү тандап бүткөндөн кийин, себеттин үстүнө басып, ал жерден 'Чалуу' баскычын басып биз менен байланышыңыз. Тандалган товарлардын артикулун айтыңыз. Калганын телефон аркылуу сүйлөшөбүз!">
-                    Буюртма бериш учун керакли маҳсулотларни танланг, улар юқоридаги саватга тушади. Керакли нарсаларни танлаб бўлгач, сават устига босинг ва у ердан 'Қўнғироқ қилиш' тугмасини босиб биз билан боғланинг. Танланган маҳсулотларнинг артикулини айтинг. Қолганини телефонда келишиб оламиз!
+                    Буйрутма берүү үчүн керектүү товарларды тандаңыз, алар жогорудагы себетке түшөт. Керектүүлөрдү тандап бүткөндөн кийин, себеттин үстүнө басып, ал жерден 'Чалуу' баскычын басып биз менен байланышыңыз. Тандалган товарлардын артикулун айтыңыз. Калганын телефон аркылуу сүйлөшөбүз!
                 </p>
             </div>
 
@@ -186,7 +186,7 @@
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleCart()"></div>
         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md glass-card p-6 border border-white/10 shadow-2xl flex flex-col max-h-[80vh]">
             <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-4">
-                <h2 class="text-2xl font-heading font-bold text-neon_yellow uppercase tracking-wider lang-text" data-uz="Сават" data-ru="Корзина" data-kg="Себет">Сават</h2>
+                <h2 class="text-2xl font-heading font-bold text-neon_yellow uppercase tracking-wider lang-text" data-uz="Сават" data-ru="Корзина" data-kg="Себет">Себет</h2>
                 <button onclick="toggleCart()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
             </div>
             
@@ -194,13 +194,13 @@
             
             <div class="mt-4 pt-4 border-t border-white/10 space-y-4">
                 <div class="flex justify-between items-center text-xl font-bold">
-                    <span class="lang-text" data-uz="Жами:" data-ru="Итого:" data-kg="Баардыгы:">Жами:</span>
+                    <span class="lang-text" data-uz="Жами:" data-ru="Итого:" data-kg="Баардыгы:">Баардыгы:</span>
                     <span id="cart-total" class="text-neon_yellow">0 UZS</span>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="clearCart()" class="flex-1 bg-white/10 hover:bg-red-500/80 text-white py-3 rounded-xl font-bold transition-colors lang-text" data-uz="Тозалаш" data-ru="Очистить" data-kg="Тазалоо">Тозалаш</button>
+                    <button onclick="clearCart()" class="flex-1 bg-white/10 hover:bg-red-500/80 text-white py-3 rounded-xl font-bold transition-colors lang-text" data-uz="Тозалаш" data-ru="Очистить" data-kg="Тазалоо">Тазалоо</button>
                     <a href="tel:{{ info.phone | replace(' ', '') }}" class="flex-[2] bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl font-bold transition-colors shadow-[0_0_15px_rgba(59,130,246,0.4)] flex justify-center items-center gap-2">
-                        <i class="fa-solid fa-phone-volume text-xl"></i> <span class="lang-text" data-uz="Қўнғироқ қилиш" data-ru="Позвонить" data-kg="Чалуу">Қўнғироқ қилиш</span>
+                        <i class="fa-solid fa-phone-volume text-xl"></i> <span class="lang-text" data-uz="Қўнғироқ қилиш" data-ru="Позвонить" data-kg="Чалуу">Чалуу</span>
                     </a>
                 </div>
             </div>
@@ -212,7 +212,7 @@
         <div class="max-w-7xl mx-auto px-6">
             <div class="glass-card p-12 text-center border-neon_orange/20 relative group mb-20">
                 <div class="absolute inset-0 bg-neon_orange/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl"></div>
-                <h3 class="font-heading text-4xl text-neon_yellow font-bold mb-6 tracking-widest uppercase lang-text" data-uz="Фирма ҳақида" data-ru="О компании" data-kg="Компания жөнүндө">Фирма ҳақида</h3>
+                <h3 class="font-heading text-4xl text-neon_yellow font-bold mb-6 tracking-widest uppercase lang-text" data-uz="Фирма ҳақида" data-ru="О компании" data-kg="Компания жөнүндө">Компания жөнүндө</h3>
                 <p class="text-gray-300 max-w-4xl mx-auto text-lg leading-relaxed mb-8 font-light italic">"{{ info.about }}"</p>
                 <a href="tel:{{ info.phone | replace(' ', '') }}" class="inline-flex items-center bg-navy/60 px-8 py-4 rounded-full border border-white/10 shadow-xl backdrop-blur-md hover:border-neon_yellow transition-colors group-hover:scale-105">
                     <i class="fa-solid fa-phone-volume text-3xl text-neon_yellow mr-4 animate-bounce"></i>
