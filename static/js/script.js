@@ -1,7 +1,7 @@
-// Asosiy til qirg'iz tili qilib belgilandi
 let currentLang = 'kg';
 let products = [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let deferredPrompt;
 
 function changeLang(lang) {
     if(lang) currentLang = lang;
@@ -32,10 +32,8 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// Mahsulotlarni LocalStorage keshidan olish tizimi joriy etildi
 async function fetchProducts() {
     try {
-        // 1-QADAM: Eng avval qurilma keshini (LocalStorage) o'qiymiz
         const cachedData = localStorage.getItem('sss_cached_products');
         if (cachedData) {
             products = JSON.parse(cachedData);
@@ -43,7 +41,6 @@ async function fetchProducts() {
             renderProducts();
         }
 
-        // 2-QADAM: Sayt orqa fonda serverdan yangilik bor-yo'qligini tekshiradi
         const response = await fetch('/api/products'); 
         if (!response.ok) throw new Error("Server xatosi");
 
@@ -61,7 +58,6 @@ async function fetchProducts() {
             return;
         }
 
-        // 3-QADAM: Faqatgina bazada o'zgarish bo'lgan bo'lsagina sahifani va keshni yangilaymiz!
         if (JSON.stringify(newProducts) !== cachedData) {
             products = newProducts;
             localStorage.setItem('sss_cached_products', JSON.stringify(products));
@@ -276,28 +272,20 @@ function clearCart() {
     }
 }
 
-// ==========================================
-// PWA VA O'RNATISH MANTIQI
-// ==========================================
+// PWA: Service Worker va O'rnatish
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW xato: ', err));
     });
 }
 
-const installBtn = document.getElementById('install-pwa-btn');
-let deferredPrompt;
-
-// Tugma doim ko'rinib tursin, foydalanuvchi ilova borligini his qilsin
-installBtn.style.display = 'block';
-
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
 });
 
-installBtn.addEventListener('click', () => {
-    // Foydalanuvchi Telegramdan kirganini tekshiramiz
+// HTML dan to'g'ridan-to'g'ri chaqiriladigan funksiya
+window.handleInstallClick = function() {
     const isTelegram = /Telegram/i.test(navigator.userAgent);
 
     if (isTelegram) {
@@ -309,19 +297,15 @@ installBtn.addEventListener('click', () => {
 
     if (deferredPrompt) {
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                installBtn.style.display = 'none';
-            }
+        deferredPrompt.userChoice.then(() => {
             deferredPrompt = null;
         });
     } else {
-        // iOS yoki boshqa nostandart brauzerlar uchun
         alert(currentLang === 'kg' ? "Браузердин менюсунан 'Үй экранына кошуу' (Add to Home Screen) баскычын басыңыз." :
               currentLang === 'ru' ? "Используйте меню браузера 'Добавить на главный экран'." :
               "Brauzer menyusidan 'Asosiy ekranga qo'shish' (Add to Home Screen) ni tanlang.");
     }
-});
+};
 
 window.onload = () => {
     fetchProducts();
@@ -329,4 +313,10 @@ window.onload = () => {
     fetchLocations();
     updateCartUI();
     changeLang('kg'); 
+    
+    // Tugmani doim ko'rsatish
+    const installBtn = document.getElementById('install-pwa-btn');
+    if (installBtn) {
+        installBtn.style.display = 'block';
+    }
 };
