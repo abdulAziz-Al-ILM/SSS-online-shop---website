@@ -1,4 +1,5 @@
-let currentLang = 'uz';
+// Asosiy til qirg'iz tili qilib belgilandi
+let currentLang = 'kg';
 let products = [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
@@ -31,30 +32,48 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
+// Mahsulotlarni LocalStorage keshidan olish tizimi joriy etildi
 async function fetchProducts() {
     try {
+        // 1-QADAM: Eng avval qurilma keshini (LocalStorage) o'qiymiz
+        const cachedData = localStorage.getItem('sss_cached_products');
+        if (cachedData) {
+            products = JSON.parse(cachedData);
+            renderCategories();
+            renderProducts();
+        }
+
+        // 2-QADAM: Sayt orqa fonda serverdan yangilik bor-yo'qligini tekshiradi
         const response = await fetch('/api/products'); 
         if (!response.ok) throw new Error("Server xatosi");
 
         const resData = await response.json();
-        products = resData.data || [];
-        const debugLog = resData.debug_info || "Маълумот йўқ";
+        const newProducts = resData.data || [];
+        const debugLog = resData.debug_info || "Маалымат жок";
         
-        if(products.length === 0) {
+        if(newProducts.length === 0 && !cachedData) {
             document.getElementById('products-container').innerHTML = `
                 <div class="col-span-full w-full glass-card border border-red-500/50 p-6">
-                    <p class='text-neon_yellow text-xl font-bold mb-4'>⚠️ Маҳсулотлар юкланмади. Сабаби:</p>
+                    <p class='text-neon_yellow text-xl font-bold mb-4'>⚠️ Товарлар жүктөлгөн жок. Себеби:</p>
                     <pre class='text-gray-300 text-xs bg-black/60 p-4 rounded-xl overflow-x-auto whitespace-pre-wrap font-mono mb-4'>${debugLog}</pre>
-                    <p class="text-white font-bold bg-red-500/20 py-2 px-4 rounded-lg inline-block">Шу қора ойнадаги ёзувни нусхалаб, менга (сунъий интеллектга) ташланг!</p>
+                    <p class="text-white font-bold bg-red-500/20 py-2 px-4 rounded-lg inline-block">Бул кара терезедеги текстти көчүрүп, мага (Жасалма Интеллектке) жөнөтүңүз!</p>
                 </div>`;
             return;
         }
 
-        renderCategories();
-        renderProducts();
+        // 3-QADAM: Faqatgina bazada o'zgarish bo'lgan bo'lsagina sahifani va keshni yangilaymiz!
+        if (JSON.stringify(newProducts) !== cachedData) {
+            products = newProducts;
+            localStorage.setItem('sss_cached_products', JSON.stringify(products));
+            renderCategories();
+            renderProducts(document.getElementById('search-input').value.toLowerCase());
+        }
+
     } catch (error) {
         console.error("Xatolik:", error);
-        document.getElementById('products-container').innerHTML = `<p class='text-red-400 text-center w-full font-bold py-10'>Серверга уланишда хатолик: ${error.message}</p>`;
+        if (products.length === 0) {
+            document.getElementById('products-container').innerHTML = `<p class='text-red-400 text-center w-full font-bold py-10'>Серверге туташууда катачылык: ${error.message}</p>`;
+        }
     }
 }
 
@@ -163,23 +182,23 @@ function renderProducts(searchQuery = '') {
     });
 
     if(filtered.length === 0 && products.length > 0) {
-        container.innerHTML = `<p class="text-gray-400 p-4 font-bold col-span-full">${currentLang === 'uz' ? 'Топилмади' : 'Не найдено'}</p>`;
+        container.innerHTML = `<p class="text-gray-400 p-4 font-bold col-span-full">${currentLang === 'uz' ? 'Топилмади' : currentLang === 'ru' ? 'Не найдено' : 'Табылган жок'}</p>`;
         return;
     }
 
     filtered.forEach(p => {
-        const fullArt = String(p.article);
+        const shortArt = p.article; 
         const card = document.createElement('div');
         card.className = 'product-card glass-card p-4 flex flex-col justify-between h-full';
         card.innerHTML = `
             <div>
                 <img src="${p.img}" loading="lazy" alt="${p.name}" class="w-full h-36 object-cover rounded-xl mb-3 border border-white/5 bg-navy">
                 <h3 class="text-white font-bold text-lg leading-tight mb-1 truncate">${p.name}</h3>
-                <p class="text-gray-400 text-xs mb-2 font-mono bg-white/5 inline-block px-2 py-1 rounded">Art: ${fullArt}</p>
+                <p class="text-gray-400 text-xs mb-2 font-mono bg-white/5 inline-block px-2 py-1 rounded">Art: ${shortArt}</p>
             </div>
             <div class="mt-4">
                 <p class="text-neon_yellow font-bold text-xl mb-3">${p.price.toLocaleString()} <span class="text-xs text-white/50">UZS</span></p>
-                <button onclick="addToCart('${p.id}', '${fullArt}', '${p.name}', ${p.price})" class="w-full bg-white/10 hover:bg-neon_yellow hover:text-navy text-white text-sm font-bold py-2.5 rounded-lg transition-colors border border-white/5">
+                <button onclick="addToCart('${p.id}', '${shortArt}', '${p.name}', ${p.price})" class="w-full bg-white/10 hover:bg-neon_yellow hover:text-navy text-white text-sm font-bold py-2.5 rounded-lg transition-colors border border-white/5">
                     <i class="fa-solid fa-cart-plus"></i> ${currentLang === 'uz' ? 'Саватга' : currentLang === 'ru' ? 'В корзину' : 'Себетке'}
                 </button>
             </div>
@@ -190,7 +209,7 @@ function renderProducts(searchQuery = '') {
 }
 
 function addToCart(id, article, name, price) {
-    let msg = currentLang === 'uz' ? "Нечта қўшмоқчисиз?" : currentLang === 'ru' ? "Сколько добавить?" : "Канча кошосуз?";
+    let msg = currentLang === 'kg' ? "Канча кошосуз?" : currentLang === 'ru' ? "Сколько добавить?" : "Нечта қўшмоқчисиз?";
     let qtyStr = prompt(msg, "1");
     let qty = parseInt(qtyStr);
     if (isNaN(qty) || qty <= 0) return;
@@ -251,10 +270,21 @@ function removeFromCart(index) {
 }
 
 function clearCart() {
-    if(confirm(currentLang === 'uz' ? "Саватни тўлиқ тозалаймизми?" : "Очистить корзину полностью?")) {
+    if(confirm(currentLang === 'kg' ? "Себетти толугу менен тазалайбызбы?" : currentLang === 'ru' ? "Очистить корзину полностью?" : "Саватни тўлиқ тозалаймизми?")) {
         cart = [];
         saveCart();
     }
+}
+
+// PWA: Service Worker o'rnatish
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(reg => {
+            console.log('ServiceWorker muvaffaqiyatli ishga tushdi: ', reg.scope);
+        }).catch(err => {
+            console.log('ServiceWorker xatosi: ', err);
+        });
+    });
 }
 
 let deferredPrompt;
@@ -278,5 +308,5 @@ window.onload = () => {
     fetchServices();
     fetchLocations();
     updateCartUI();
-    changeLang('uz');
+    changeLang('kg'); // Boshlang'ich til Qirg'iz tili
 };
