@@ -31,7 +31,6 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// --- MAHSULOTLAR VA DEBUG ---
 async function fetchProducts() {
     try {
         const response = await fetch('/api/products'); 
@@ -41,7 +40,6 @@ async function fetchProducts() {
         products = resData.data || [];
         const debugLog = resData.debug_info || "Маълумот йўқ";
         
-        // Agar mahsulotlar umuman kelmasa, xatoni ochiq ko'rsatamiz!
         if(products.length === 0) {
             document.getElementById('products-container').innerHTML = `
                 <div class="col-span-full w-full glass-card border border-red-500/50 p-6">
@@ -60,7 +58,6 @@ async function fetchProducts() {
     }
 }
 
-// --- XIZMATLAR ---
 async function fetchServices() {
     try {
         const response = await fetch('/api/services');
@@ -87,7 +84,6 @@ function renderServices(services) {
     `).join('');
 }
 
-// --- LOKATSIYALAR (To'liq bosiladigan va chiroyli dizayn bilan) ---
 async function fetchLocations() {
     try {
         const response = await fetch('/api/locations');
@@ -107,11 +103,9 @@ function renderLocations(locations) {
     }
     
     container.innerHTML = locations.map(loc => {
-        // Bazada lat/lon yoki latitude/longitude qilib saqlangan bo'lishi mumkin
         const lat = loc.lat || loc.latitude;
         const lon = loc.lon || loc.longitude;
         
-        // Agar kordinatalar bo'lsa butun kartochka havola vazifasini bajaradi
         const hasCoords = (lat && lon);
         const mapLink = hasCoords ? `https://yandex.com/maps/?pt=${lon},${lat}&z=16&l=map` : '#';
         const onClickAttr = hasCoords ? `onclick="window.open('${mapLink}', '_blank')"` : '';
@@ -134,7 +128,6 @@ function renderLocations(locations) {
     }).join('');
 }
 
-// --- LOGIKA VA UI ---
 let activeCategory = 'All';
 
 function renderCategories() {
@@ -175,18 +168,18 @@ function renderProducts(searchQuery = '') {
     }
 
     filtered.forEach(p => {
-        const shortArt = String(p.article).slice(-4).toUpperCase();
+        const fullArt = String(p.article);
         const card = document.createElement('div');
         card.className = 'product-card glass-card p-4 flex flex-col justify-between h-full';
         card.innerHTML = `
             <div>
                 <img src="${p.img}" loading="lazy" alt="${p.name}" class="w-full h-36 object-cover rounded-xl mb-3 border border-white/5 bg-navy">
                 <h3 class="text-white font-bold text-lg leading-tight mb-1 truncate">${p.name}</h3>
-                <p class="text-gray-400 text-xs mb-2 font-mono bg-white/5 inline-block px-2 py-1 rounded">Art: ...${shortArt}</p>
+                <p class="text-gray-400 text-xs mb-2 font-mono bg-white/5 inline-block px-2 py-1 rounded">Art: ${fullArt}</p>
             </div>
             <div class="mt-4">
                 <p class="text-neon_yellow font-bold text-xl mb-3">${p.price.toLocaleString()} <span class="text-xs text-white/50">UZS</span></p>
-                <button onclick="addToCart('${p.id}', '${shortArt}', '${p.name}', ${p.price})" class="w-full bg-white/10 hover:bg-neon_yellow hover:text-navy text-white text-sm font-bold py-2.5 rounded-lg transition-colors border border-white/5">
+                <button onclick="addToCart('${p.id}', '${fullArt}', '${p.name}', ${p.price})" class="w-full bg-white/10 hover:bg-neon_yellow hover:text-navy text-white text-sm font-bold py-2.5 rounded-lg transition-colors border border-white/5">
                     <i class="fa-solid fa-cart-plus"></i> ${currentLang === 'uz' ? 'Саватга' : currentLang === 'ru' ? 'В корзину' : 'Себетке'}
                 </button>
             </div>
@@ -240,7 +233,7 @@ function updateCartUI() {
             <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5 mb-2">
                 <div class="flex-1 overflow-hidden pr-2">
                     <p class="font-bold text-sm text-white truncate">${item.name}</p>
-                    <p class="text-xs text-gray-400 font-mono">Art: ...${item.article}</p>
+                    <p class="text-xs text-gray-400 font-mono">Art: ${item.article}</p>
                     <p class="text-sm text-neon_yellow mt-1">${item.qty} x ${item.price.toLocaleString()} = ${(item.qty * item.price).toLocaleString()}</p>
                 </div>
                 <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-500 bg-red-400/10 p-3 rounded-lg ml-2 transition-colors">
@@ -262,24 +255,6 @@ function clearCart() {
         cart = [];
         saveCart();
     }
-}
-
-function checkoutWhatsApp() {
-    if (cart.length === 0) return alert(currentLang === 'uz' ? "Сават бўш!" : "Корзина пуста!");
-    
-    let text = "Ассалому алайкум! Мен қуйидаги артикуллар бўйича буюртма бермоқчиман:\n\n";
-    let total = 0;
-    
-    cart.forEach(item => {
-        text += `🔹 Art: ...${item.article} | ${item.qty} та x ${item.price} = ${item.price * item.qty} UZS\n`;
-        total += item.price * item.qty;
-    });
-    
-    text += `\n💵 Жами сумма: ${total.toLocaleString()} UZS\nИлтимос, тайёрлаб қўйинг!`;
-    window.open(`https://wa.me/998901234567?text=${encodeURIComponent(text)}`, '_blank');
-    
-    clearCart();
-    toggleCart();
 }
 
 let deferredPrompt;
