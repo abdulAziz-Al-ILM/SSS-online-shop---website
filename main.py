@@ -24,7 +24,6 @@ templates = Jinja2Templates(directory="templates")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 BILLZ_API_KEY = os.getenv("BILLZ_API_KEY") 
 
-# Botingdan ajratib olingan Kategoriya ID'lari sirlari
 CATEGORIES_DB = {
     "elektr jihozlari": "59ce55e6-0b1e-4be2-a646-87f3c8e95876", 
     "santexnika": "79233dfd-cec2-47ca-a787-403829e554d4", 
@@ -66,7 +65,6 @@ async def api_get_products():
     all_products = []
     debug_log = ""
     
-    # 1. BOT BAZASIDAN OLISH
     get_prods = getattr(db_module, "get_all_products", getattr(db_module, "get_all_active_products", None))
     if get_prods:
         try:
@@ -80,7 +78,7 @@ async def api_get_products():
                     all_products.append({
                         "id": prod_id,
                         "name": str(p.get("name", "Nomsiz")),
-                        "article": f"BOT-{prod_id[-4:]}",
+                        "article": str(p.get("article", f"BOT-{prod_id[-4:]}")),
                         "price": price,
                         "category": str(p.get("category", "Бизнинг маҳсулотлар")),
                         "img": f"/api/image/{p.get('file_id')}" if p.get('file_id') else "https://via.placeholder.com/300x200?text=Rasm+yo'q"
@@ -88,7 +86,6 @@ async def api_get_products():
         except Exception as e:
             pass
 
-    # 2. BILLZ ADMIN API (KATEGORIYALAR ORQALI BYPASS)
     if BILLZ_API_KEY:
         try:
             async with httpx.AsyncClient() as client:
@@ -110,7 +107,6 @@ async def api_get_products():
                         
                         debug_log += "Kategoriyalar orqali ma'lumot qidirish (Bypass V2) ishga tushdi...\n"
                         
-                        # Har bir kategoriya bo'yicha alohida so'rov yuboramiz
                         for cat_name_uz, cat_uuid in CATEGORIES_DB.items():
                             bypass_url = f"https://api-admin.billz.ai/v2/product?category_id={cat_uuid}&limit=50"
                             try:
@@ -121,7 +117,6 @@ async def api_get_products():
                                         pid = str(item.get("id"))
                                         if pid not in found_ids:
                                             found_ids.add(pid)
-                                            # Kategoriya nomini majburan o'zimiznikiga o'zgartiramiz
                                             item['override_category'] = cat_name_uz.capitalize()
                                             billz_list.append(item)
                             except: continue
@@ -131,7 +126,6 @@ async def api_get_products():
                         if not billz_list:
                             debug_log += "ЯКУНИЙ ХУЛОСА: Тўлиқ блок. Маҳсулотларни рўйхат шаклида олиш бу калит билан таъқиқланган. Биллз операторларига қўнғироқ қилинг ва 'E-commerce (сайт) учун интеграция API калити кераклигини' айтинг.\n"
                             
-                        # SAYTGA MOSLASH
                         for p in billz_list:
                             price = 0
                             try:
