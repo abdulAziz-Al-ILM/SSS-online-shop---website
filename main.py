@@ -2,7 +2,7 @@ import os
 import httpx
 import asyncio
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
@@ -39,6 +39,24 @@ CATEGORIES_DB = {
     "muhandislik tizimlari": "f53dfb0f-6113-4a9e-b913-09c44cbbef10"
 }
 
+# =====================================================================
+# PWA UCHUN ROOT FAYLLARNI SERVING QILISH (XATO SHU YERDA EDI)
+# =====================================================================
+@app.get("/manifest.json")
+async def get_manifest():
+    if os.path.exists("manifest.json"):
+        return FileResponse("manifest.json", media_type="application/json")
+    return {"error": "manifest.json topilmadi"}
+
+@app.get("/sw.js")
+async def get_service_worker():
+    if os.path.exists("sw.js"):
+        return FileResponse("sw.js", media_type="application/javascript")
+    return {"error": "sw.js topilmadi"}
+
+# =====================================================================
+# ASOSIY ROUTELAR
+# =====================================================================
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     get_info = getattr(db_module, "get_combined_info", getattr(db_module, "get_shop_info", None))
