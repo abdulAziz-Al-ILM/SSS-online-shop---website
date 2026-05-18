@@ -53,7 +53,7 @@ async function fetchProducts() {
                 <div class="col-span-full w-full glass-card border border-red-500/50 p-6">
                     <p class='text-neon_yellow text-xl font-bold mb-4'>⚠️ Товарлар жүктөлгөн жок. Себеби:</p>
                     <pre class='text-gray-300 text-xs bg-black/60 p-4 rounded-xl overflow-x-auto whitespace-pre-wrap font-mono mb-4'>${debugLog}</pre>
-                    <p class="text-white font-bold bg-red-500/20 py-2 px-4 rounded-lg inline-block">Бул кара терезедеги текстти көчүрүп, мага (Жасалма Интеллектке) жөнөтүңүz!</p>
+                    <p class="text-white font-bold bg-red-500/20 py-2 px-4 rounded-lg inline-block">Бул кара терезедеги текстти көчүрүп, мага (Жасалма Интеллектке) жөнөтүңүз!</p>
                 </div>`;
             return;
         }
@@ -205,7 +205,7 @@ function renderProducts(searchQuery = '') {
 }
 
 function addToCart(id, article, name, price) {
-    let msg = currentLang === 'kg' ? "Канча кошосуз?" : currentLang === 'ru' ? "Сколько добавить?" : "Нечта қўшмоқчисиз?";
+    let msg = currentLang === 'kg' ? "Канча кошосуз?" : currentLang === 'ru' ? "Сколько добавить?" : "Нечta қўшмоқчисиз?";
     let qtyStr = prompt(msg, "1");
     let qty = parseInt(qtyStr);
     if (isNaN(qty) || qty <= 0) return;
@@ -284,30 +284,23 @@ window.addEventListener('beforeinstallprompt', (e) => {
     deferredPrompt = e;
 });
 
-// TELEGRAM MENYUDAN CHIQIB CHROME/SAFARI GA MAJBURLASH FUNKSIYASI
+// NUSXALASH UCHUN HAVOLA VA CHROME'GA KO'CHIRISH MANTIQLI TUGMASI
 window.handleInstallClick = function() {
-    // Foydalanuvchi Telegram WebApp ichida ekanligini 100% aniqlash
     const isTelegramApp = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData !== "");
     const isTelegramUA = /Telegram/i.test(navigator.userAgent);
 
     if (isTelegramApp || isTelegramUA) {
-        // Agar Telegram WebApp API mavjud bo'lsa, havolani majburlab Chrome/Safari orqali ochamiz!
-        if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
-            alert(currentLang === 'kg' ? "Тиркемени орнотуу үчүн браузер ачылат. Ал жерден 'Орнотуу' баскычын кайра басыңыз." :
-                  currentLang === 'ru' ? "Для установки приложение откроется в системном браузере. Нажмите там 'Установить' еще раз." :
-                  "Ilovani o'rnatish uchun tashqi brauzer ochiladi. U yerdan 'O'rnatish' tugmasini qayta bosing.");
-            
-            // openLink tashqi tizim brauzerini majburan ochib beradi
-            window.Telegram.WebApp.openLink(window.location.origin, { try_instant_view: false });
-        } else {
-            alert(currentLang === 'kg' ? "Telegram'дын ичинен орнотуу мүмкүн эмес. Оң жогорку бурчтагы 3 чекитти басып, 'Браузерде ачуу' (Open in Browser) дегенди тандаңыз." :
-                  currentLang === 'ru' ? "Нельзя установить прямо из Telegram. Нажмите на 3 точки в правом верхнем углу и выберите 'Открыть в браузере'." :
-                  "Telegram ichidan o'rnatib bo'lmaydi. O'ng yuqori burchakdagi 3 ta nuqtani bosib, 'Brauzerda ochish'ni tanlang.");
-        }
+        const currentUrl = window.location.origin;
+        
+        const msg = currentLang === 'kg' ? "Telegram ичинен түз орнотуу мүмкүн эмес. Төмөнкү шилтемени көчүрүп, Chrome же Safari браузерине чаптаңыз жана ал жерден жүктөп алыңыз:" :
+                    currentLang === 'ru' ? "Нельзя установить прямо из Telegram. Скопируйте ссылку ниже, вставьте её в браузер Chrome или Safari и установите оттуда:" :
+                    "Telegram ichidan to'g'ridan-to'g'ri o'rnatib bo'lmaydi. Quyidagi havolani nusxalab, Chrome yoki Safari brauzeriga joylang va o'sha yerdan yuklab oling:";
+        
+        // prompt() oynasi foydalanuvchiga matnni belgilangan holatda beradi, Ctrl+C yoki Nusxalash tugmasini bosish oson
+        prompt(msg, currentUrl);
         return;
     }
 
-    // Agar foydalanuvchi allaqachon Chrome yoki Safari ichida turgan bo'lsa
     if (deferredPrompt) {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then(() => {
@@ -315,7 +308,7 @@ window.handleInstallClick = function() {
         });
     } else {
         alert(currentLang === 'kg' ? "Браузердин менюсунан 'Үй экранына кошуу' (Add to Home Screen) баскычын басыңыз." :
-              currentLang === 'ru' ? "Используйте menu браузера 'Добавить на главный экран'." :
+              currentLang === 'ru' ? "Используйте меню браузера 'Добавить на главный экран'." :
               "Brauzer menyusidan 'Asosiy ekranga qo'shish' (Add to Home Screen) ni tanlang.");
     }
 };
@@ -327,7 +320,6 @@ window.onload = () => {
     updateCartUI();
     changeLang('kg'); 
     
-    // Telegram WebApp yuklangan bo'lsa uni to'liq ekranga yoyamiz
     if (window.Telegram && window.Telegram.WebApp) {
         window.Telegram.WebApp.ready();
         window.Telegram.WebApp.expand();
