@@ -166,6 +166,13 @@
                 </div>
             </div>
 
+            <div class="glass-card p-6 mb-10 border-l-4 border-neon_yellow bg-white/5">
+                <h3 class="text-xl font-bold text-white mb-2 lang-text" data-uz="🛒 Буюртма бериш тартиби:" data-ru="🛒 Как сделать заказ:" data-kg="🛒 Буйрутма берүү тартиби:">🛒 Буюртма бериш тартиби:</h3>
+                <p class="text-gray-300 text-sm leading-relaxed lang-text" data-uz="Буюртма бериш учун керакли маҳсулотларни танланг, улар юқоридаги саватга тушади. Керакли нарсаларни танлаб бўлгач, сават устига босинг ва у ердан 'Қўнғироқ қилиш' тугмасини босиб биз билан боғланинг. Танланган маҳсулотларнинг артикулини айтинг. Қолганини телефонда келишиб оламиз!" data-ru="Для оформления заказа выберите нужные товары, они попадут в корзину сверху. После выбора нажмите на корзину, затем на кнопку 'Позвонить' и свяжитесь с нами. Продиктуйте артикулы выбранных товаров. Остальные детали обсудим по телефону!" data-kg="Буйрутма берүү үчүн керектүү товарларды тандаңыз, алар жогорудагы себетке түшөт. Керектүүлөрдү тандап бүткөндөн кийин, себеттин үстүнө басып, ал жерден 'Чалуу' баскычын басып биз менен байланышыңыз. Тандалган товарлардын артикулун айтыңыз. Калганын телефон аркылуу сүйлөшөбүз!">
+                    Буюртма бериш учун керакли маҳсулотларни танланг, улар юқоридаги саватга тушади. Керакли нарсаларни танлаб бўлгач, сават устига босинг ва у ердан 'Қўнғироқ қилиш' тугмасини босиб биз билан боғланинг. Танланган маҳсулотларнинг артикулини айтинг. Қолганини телефонда келишиб оламиз!
+                </p>
+            </div>
+
             <div id="category-filters" class="flex overflow-x-auto gap-4 mb-10 pb-4 hide-scrollbar scroll-smooth snap-x"></div>
 
             <div class="relative">
@@ -192,9 +199,9 @@
                 </div>
                 <div class="flex gap-2">
                     <button onclick="clearCart()" class="flex-1 bg-white/10 hover:bg-red-500/80 text-white py-3 rounded-xl font-bold transition-colors lang-text" data-uz="Тозалаш" data-ru="Очистить" data-kg="Тазалоо">Тозалаш</button>
-                    <button onclick="checkoutWhatsApp()" class="flex-[2] bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold transition-colors shadow-[0_0_15px_rgba(34,197,94,0.4)] flex justify-center items-center gap-2">
-                        <i class="fa-brands fa-whatsapp text-xl"></i> <span class="lang-text" data-uz="Буюртма бериш" data-ru="Заказать" data-kg="Буйрутма берүү">Буюртма бериш</span>
-                    </button>
+                    <a href="tel:{{ info.phone | replace(' ', '') }}" class="flex-[2] bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl font-bold transition-colors shadow-[0_0_15px_rgba(59,130,246,0.4)] flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-phone-volume text-xl"></i> <span class="lang-text" data-uz="Қўнғироқ қилиш" data-ru="Позвонить" data-kg="Чалуу">Қўнғироқ қилиш</span>
+                    </a>
                 </div>
             </div>
         </div>
